@@ -1,14 +1,12 @@
 {
   "name": "typething",
   "version": "1.0.0",
-  "description": "A project to demonstrate Google Geocoding with TypeScript",
+  "description": "Graph and routes services using Google API",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "ts-node src/server.ts",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
-    "generate-graph": "ts-node src/generarGrafo.ts --estado durango --estado nayarit --estado sinaloa",
-    "map-load": "ts-node src/visualizador.ts",
-    "route-load": "ts-node src/visualizadorRuta.ts",
-    "route-search": "ts-node src/buscarRuta --origen 25 --destino 88"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts"
   },
   "keywords": [],
   "author": "",
@@ -33,6 +31,7 @@
     "@types/node": "^20.19.1",
     "@types/puppeteer": "^5.4.7",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "nodemon": "^3.1.0"
   }
 }

@@ -7,6 +7,10 @@
     "esModuleInterop": true,
     "outDir": "./dist",
     "rootDir": "./src",
+    "baseUrl": "./src",
+    "paths": {
+      "*": ["*"]
+    },
     "strict": true,
     "skipLibCheck": true
   }

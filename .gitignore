@@ -1,6 +1,12 @@
 # Node modules
 node_modules/
 
+#original one to run it locally
+package-security_copy.json
+
+#original tsconfig to run it locally
+tsconfig-security_copy.json
+
 # Build output
 dist/
 build/
