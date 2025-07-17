@@ -19,6 +19,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use('/api', graphRoutes);
 app.use('/api', rutaRoutes);
 app.use('/api', visualizadorRoutes);
+app.use('/debug-files', express.static(path.join(__dirname, '../public/debug.ts')));
 app.get('/docs', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'docs.html'));
 });
