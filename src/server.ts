@@ -23,7 +23,7 @@ app.use('/api', rutaRoutes);
 app.use('/api', visualizadorRoutes);
 
 app.get('/debug-files', (req, res) => {
-  const publicPath = path.join(__dirname, 'public');
+  const basePath = path.join(__dirname, '..');
 
   function listarRecursivo(dir: string, nivel = 0): string {
     let resultado = '';
@@ -45,13 +45,14 @@ app.get('/debug-files', (req, res) => {
   }
 
   try {
-    const listado = listarRecursivo(publicPath);
+    const listado = listarRecursivo(basePath);
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.send(listado);
   } catch (err) {
     res.status(500).send(`Error leyendo archivos: ${(err as Error).message}`);
   }
 });
+
 
 app.get('/docs', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'docs.html'));
