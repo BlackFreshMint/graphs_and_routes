@@ -97,3 +97,6 @@ para comprobar si se cargo correctamente, intenta utilizar:
 localhost:puerto/docs
 ```
 se debera mostrar un html que contentga la documentacion de las peticiones, si carga correctamente, entonces puedes proceder a realizar las pruebas, implementaciones o cualquier cosa que sea necesaria
+
+
+### debug
