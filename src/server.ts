@@ -23,7 +23,7 @@ app.use('/api', rutaRoutes);
 app.use('/api', visualizadorRoutes);
 
 app.get('/debug-files', (req, res) => {
-  const basePath = path.join(__dirname); // __dirname en dist ya ES la raíz de dist
+  const basePath = path.join(__dirname);
 
   function listarRecursivo(dir: string, nivel = 0): string {
     let resultado = '';
