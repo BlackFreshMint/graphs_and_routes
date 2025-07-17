@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Documentación API - Grafos y Rutas</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background-color: #f9fafb;
+      color: #333;
+    }
+    h1, h2 {
+      color: #1f2937;
+    }
+    pre {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      position: relative;
+    }
+    code {
+      font-family: Consolas, monospace;
+    }
+    button.copy-btn {
+      position: absolute;
+      top: 0.8rem;
+      right: 0.5rem;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.8rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .output-box {
+      background: #e5e7eb;
+      border-left: 4px solid #3b82f6;
+      padding: 1rem;
+      margin-top: 0.5rem;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+    section {
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Documentación de API – Grafos y Rutas</h1>
+
+  <section>
+    <h2>Peticiones Backend</h2>
+
+    <h3>Generar grafo de un estado (singular)</h3>
+    <pre><code id="grafo-estado">http://localhost:3000/api/grafo?estado=zacatecas</code><button class="copy-btn" onclick="copy('grafo-estado')">Copiar</button></pre>
+    <div class="output-box">
+      #meramente ilustrativo,
+      {
+    "nodos": [
+        {
+            "id": 0,
+            "nombre": "Allende Zacatecas Zac",
+            "categoria": "Administración Postal",
+            "pesoCategoria": 1,
+            "lat": 22.7705723,
+            "lng": -102.5741797
+        },
+        {
+            "id": 1,
+            "nombre": "Sindicato Zacatecas, Zac.",
+            "categoria": "Of. Sindicato",
+            "pesoCategoria": 1,
+            "lat": 22.7705723,
+            "lng": -102.5741797
+        },
+        {
+            "id": 2,
+            "nombre": "Gerencia Estatal Zacatecas",
+            "categoria": "Gerencia Postal Estatal",
+            "pesoCategoria": 1,
+            "lat": 22.7697372,
+            "lng": -102.6063569
+        },
+        {
+            "id": 3,
+            "nombre": "Coordinación Mexpost Zacatecas, Zac.",
+            "categoria": "Coordinación Mexpost",
+            "pesoCategoria": 1,
+            "lat": 22.7697372,
+            "lng": -102.6063569
+        },
+        {
+            "id": 4,
+            "nombre": "C.O.M. Zacatecas, Zac.",
+            "categoria": "Centro Operativo Mexpost",
+            "pesoCategoria": 1,
+            "lat": 22.7697372,
+            "lng": -102.6063569
+        }
+
+        aristas": [
+        {
+            "origen": 0,
+            "destino": 2,
+            "distancia": 5.502,
+            "peso": 5.502,
+            "polyline": "ak~iCr_aqRq@O^oC?kBL]~@sBh@HFGjA{CNKl@ARv@n@xAv@|AVl@x@vATX~@|@rBhAtAl@hAp@z@p@d@f@T^Vj@Vv@Hl@DnDJnREpAKbA[x@QTQLeCt@q@ZiBhAw@d@_@Na@Jm@HiEDcAAg@DcAXa@Rm@f@_@f@Ul@a@tAWj@c@t@WRm@VaAPw@@u@Du@Lm@Rw@b@o@r@k@z@Qb@Oh@Kv@Cf@@~@Fr@XvBn@~I`@zEBr@?tCMxEYjHMxDQn@Sz@a@bAS`@?Ri@~@Gd@HbBMb@ERBPLLR?NIDOZ_@f@Il@M\\SR[|@qCDg@V]l@@c@bBYvAq@~Ee@hFKhC?dBDdBJfANn@|AvDrBlE|@~AfDhEN\\Lf@@bAGbA`C?j@Ad@FATR`C"
+        },
+
+    </div>
+
+    <h3>Generar grafo de varios estados (múltiples)</h3>
+    <pre><code id="grafo-multiple">http://localhost:3000/api/grafo?estado=durango&estado=sinaloa&estado=zacatecas</code><button class="copy-btn" onclick="copy('grafo-multiple')">Copiar</button></pre>
+    <div class="output-box">
+
+      WIP
+
+    </div>
+
+    <h3>Generar grafo de todos los registros (nacional)</h3>
+    <pre><code id="grafo-todos">http://localhost:3000/api/grafo</code><button class="copy-btn" onclick="copy('grafo-todos')">Copiar</button></pre>
+    <div class="output-box">
+
+      WIP
+
+    </div>
+
+    <h3>Generar ruta entre dos nodos</h3>
+    <pre><code id="ruta-nodos">http://localhost:3000/api/ruta?origen=62&destino=72</code><button class="copy-btn" onclick="copy('ruta-nodos')">Copiar</button></pre>
+    <div class="output-box">{
+      {
+          "ruta": [
+              62,
+              16,
+              17,
+              2,
+              80,
+              72
+          ],
+          "distanciaTotal": 557.1850000000001
+      }
+}</div>
+  </section>
+
+  <section>
+    <h2>Peticiones Frontend (Visualización)</h2>
+
+    <h3>Visualizar ruta entre dos nodos en mapa</h3>
+    <pre><code id="vis-ruta">http://localhost:3000/api/visualizadorRuta?archivo=62_72.json</code><button class="copy-btn" onclick="copy('vis-ruta')">Copiar</button></pre>
+    <div class="output-box">
+      <center>
+      <img src="img/ruta.png">
+      </center>
+    </div>
+
+    <h3>Visualizar grafo en mapa</h3>
+    <pre><code id="vis-grafo">http://localhost:3000/api/visualizador</code><button class="copy-btn" onclick="copy('vis-grafo')">Copiar</button></pre>
+    <div class="output-box">WIP</div>
+  </section>
+
+  <script>
+    function copy(id) {
+      const code = document.getElementById(id).textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        alert("Copiado al portapapeles");
+      });
+    }
+  </script>
+</body>
+</html>
