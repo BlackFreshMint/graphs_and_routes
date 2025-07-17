@@ -23,7 +23,7 @@ app.use('/api', rutaRoutes);
 app.use('/api', visualizadorRoutes);
 
 app.get('/debug-files', (req, res) => {
-  const basePath = path.join(__dirname, '..');
+  const basePath = path.join(__dirname); // __dirname en dist ya ES la raíz de dist
 
   function listarRecursivo(dir: string, nivel = 0): string {
     let resultado = '';
@@ -52,6 +52,7 @@ app.get('/debug-files', (req, res) => {
     res.status(500).send(`Error leyendo archivos: ${(err as Error).message}`);
   }
 });
+
 
 
 app.get('/docs', (req, res) => {
