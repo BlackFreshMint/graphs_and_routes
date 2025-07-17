@@ -25,19 +25,32 @@ app.use('/api', visualizadorRoutes);
 app.get('/debug-files', (req, res) => {
   const publicPath = path.join(__dirname, 'public');
 
-  fs.readdir(publicPath, { withFileTypes: true }, (err, files) => {
-    if (err) {
-      return res.status(500).send(`Error leyendo archivos: ${err.message}`);
+  function listarRecursivo(dir: string, nivel = 0): string {
+    let resultado = '';
+    const indent = '  '.repeat(nivel);
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        const type = entry.isDirectory() ? '[DIR] ' : '[FILE]';
+        resultado += `${indent}${type}${entry.name}\n`;
+        if (entry.isDirectory()) {
+          resultado += listarRecursivo(fullPath, nivel + 1);
+        }
+      }
+    } catch (err) {
+      resultado += `${indent}Error leyendo ${dir}: ${(err as Error).message}\n`;
     }
+    return resultado;
+  }
 
-    const list = files.map(file => {
-      const type = file.isDirectory() ? '[DIR]' : '[FILE]';
-      return `${type} ${file.name}`;
-    }).join('\n');
-
-    res.setHeader('Content-Type', 'text/plain');
-    res.send(list);
-  });
+  try {
+    const listado = listarRecursivo(publicPath);
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.send(listado);
+  } catch (err) {
+    res.status(500).send(`Error leyendo archivos: ${(err as Error).message}`);
+  }
 });
 
 app.get('/docs', (req, res) => {
