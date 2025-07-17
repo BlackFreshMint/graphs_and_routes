@@ -4,8 +4,7 @@
   "description": "Graph and routes services using Google API",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
-    "postbuild": "xcopy src\\public dist\\public /E /I /Y",
+    "build": "tsc && cp -r src/public dist/",
     "start": "node dist/server.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts"
   },
