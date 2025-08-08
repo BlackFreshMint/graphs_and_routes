@@ -53,6 +53,9 @@ app.get('/debug-files', (req, res) => {
   }
 });
 
+app.get('/debug', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'debug.html'));
+});
 
 
 app.get('/docs', (req, res) => {

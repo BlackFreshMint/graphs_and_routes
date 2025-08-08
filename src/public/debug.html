@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Debug Panel</title>
+  <style>
+    body { font-family: monospace; background: #1e1e1e; color: #ddd; padding: 20px; }
+    h1 { font-size: 18px; }
+    .section { margin-bottom: 20px; }
+    textarea, pre {
+      width: 100%;
+      height: 200px;
+      background: #2b2b2b;
+      color: #0f0;
+      border: 1px solid #555;
+      padding: 10px;
+      resize: vertical;
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 5px;
+      margin-bottom: 10px;
+      background: #2b2b2b;
+      color: #fff;
+      border: 1px solid #555;
+    }
+    button {
+      padding: 5px 10px;
+      background: #007acc;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover { background: #005ea3; }
+  </style>
+</head>
+<body>
+
+  <h1>Debug Panel</h1>
+
+  <!-- Archivos -->
+  <div class="section">
+    <h2>Archivos</h2>
+    <button onclick="cargarArchivos()">Cargar estructura</button>
+    <pre id="fileTree">Pulsa "Cargar estructura" para ver los archivos...</pre>
+  </div>
+
+  <!-- Petición de grafo -->
+  <div class="section">
+    <h2>Petición de grafo</h2>
+    <input type="text" id="grafoUrl" placeholder="/api/grafo" value="/api/grafo">
+    <button onclick="cargarJSON('grafoUrl', 'grafoOutput')">Cargar</button>
+    <button onclick="descargarJSON('grafoUrl')">Descargar</button>
+    <textarea id="grafoOutput" readonly></textarea>
+  </div>
+
+  <!-- Petición de ruta -->
+  <div class="section">
+    <h2>Petición de ruta</h2>
+    <input type="text" id="rutaUrl" placeholder="/api/ruta" value="/api/ruta">
+    <button onclick="cargarJSON('rutaUrl', 'rutaOutput')">Cargar</button>
+    <button onclick="descargarJSON('rutaUrl')">Descargar</button>
+    <textarea id="rutaOutput" readonly></textarea>
+  </div>
+
+  <script>
+    async function cargarArchivos() {
+      const res = await fetch('/debug-files');
+      const text = await res.text();
+      document.getElementById('fileTree').textContent = text;
+    }
+
+    async function cargarJSON(inputId, outputId) {
+      const url = document.getElementById(inputId).value;
+      const res = await fetch(url);
+      const data = await res.json();
+      document.getElementById(outputId).value = JSON.stringify(data, null, 2);
+    }
+
+    async function descargarJSON(inputId) {
+      const url = document.getElementById(inputId).value;
+      const res = await fetch(url);
+      const data = await res.json();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = url.replace(/\W+/g, "_") + ".json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  </script>
+
+</body>
+</html>
