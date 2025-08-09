@@ -3,168 +3,400 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Debug Monitor</title>
+  <title>Debug Panel</title>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #1e1e2f;
-      color: #f5f5f5;
+    :root{
+      --bg: #0f172a;
+      --panel: #0b1220;
+      --muted: #94a3b8;
+      --text: #e6eef8;
+      --accent: #3b82f6;
+      --accent-2: #4caf50;
+      --box-bg: #0b1220;
+      --pre-bg: #071225;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    [data-theme="light"]{
+      --bg: #f9fafb;
+      --panel: #ffffff;
+      --muted: #6b7280;
+      --text: #0f172a;
+      --accent: #2563eb;
+      --accent-2: #16a34a;
+      --box-bg: #ffffff;
+      --pre-bg: #0f172a;
+      --success: #059669;
+      --danger: #dc2626;
+    }
+
+    html,body {
+      height: 100%;
       margin: 0;
-      padding: 0;
+      font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,var(--bg), #071027);
+      color: var(--text);
     }
+
+    .container {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 20px;
+    }
+
     header {
-      background: #292946;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-      font-weight: bold;
-      border-bottom: 2px solid #444;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom: 18px;
     }
-    main {
-      padding: 1rem;
-      display: grid;
-      gap: 1rem;
-      grid-template-columns: 1fr 1fr;
+
+    header h1 {
+      margin:0;
+      font-size:20px;
+      font-weight:600;
     }
-    section {
-      background: #2d2d3f;
-      border-radius: 8px;
-      padding: 1rem;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+
+    .top-controls {
+      display:flex;
+      gap:8px;
+      align-items:center;
     }
-    h2 {
-      margin-top: 0;
-      border-bottom: 1px solid #444;
-      padding-bottom: 0.5rem;
-      font-size: 1.2rem;
+
+    .theme-toggle {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius:6px;
+      cursor:pointer;
     }
-    textarea, pre {
-      width: 100%;
-      background: #1b1b28;
-      border: 1px solid #444;
-      border-radius: 6px;
-      padding: 0.5rem;
-      color: #f5f5f5;
-      resize: vertical;
+
+    .panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius:10px;
+      padding:14px;
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+      margin-bottom: 18px;
+    }
+
+    h2 { margin: 0 0 10px 0; font-size:16px; color:var(--text); }
+
+    .controls {
+      display:flex;
+      gap:8px;
+      margin-bottom:8px;
+    }
+
+    input[type="text"] {
+      background: var(--box-bg);
+      border: 1px solid rgba(255,255,255,0.04);
+      color: var(--text);
+      padding:8px;
+      border-radius:6px;
+      width: 70%;
       font-family: monospace;
     }
-    .controls {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 0.5rem;
+
+    button.primary {
+      background: linear-gradient(180deg,var(--accent), #145dbf);
+      color:white;
+      border:none;
+      padding:8px 12px;
+      border-radius:6px;
+      cursor:pointer;
     }
-    button {
-      background: #4a4aff;
-      border: none;
-      padding: 0.5rem 1rem;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s ease;
+    button.ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid rgba(255,255,255,0.03);
+      padding:8px 10px;
+      border-radius:6px;
+      cursor:pointer;
     }
-    button:hover {
-      background: #3434d6;
+
+    .progress-container {
+      height:8px;
+      background: rgba(255,255,255,0.03);
+      border-radius:6px;
+      overflow:hidden;
+      margin-top:8px;
+      margin-bottom:6px;
     }
     .progress-bar {
-      height: 8px;
-      background: #444;
-      border-radius: 4px;
-      overflow: hidden;
-      margin: 0.5rem 0;
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg,var(--accent-2), var(--accent));
+      transition: width 300ms linear;
     }
-    .progress {
-      height: 100%;
-      width: 0%;
-      background: #4a4aff;
-      transition: width 0.4s ease;
+
+    .status {
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
     }
-    #log {
-      height: 200px;
-      overflow-y: auto;
-      background: #1b1b28;
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: 1px solid #444;
-      font-size: 0.9rem;
+
+    pre, textarea {
+      width:100%;
+      background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02));
+      border-radius:8px;
+      border: 1px solid rgba(255,255,255,0.04);
+      padding:12px;
+      color: var(--text);
+      font-family: monospace;
+      resize: vertical;
+    }
+
+    pre.file-tree {
+      height: 240px;
+      overflow:auto;
+      white-space: pre-wrap;
+    }
+
+    textarea.output {
+      height: 420px;
+      overflow:auto;
+    }
+
+    .small {
+      font-size:13px;
+    }
+
+    .row {
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .download-btn {
+      background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(255,255,255,0.02));
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.04);
+      padding:8px 12px;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    @media (max-width: 900px) {
+      input[type="text"]{ width:100% }
+      .row{ flex-direction:column; align-items:flex-start }
+      textarea.output{ height: 260px }
+      pre.file-tree{ height: 200px }
     }
   </style>
 </head>
-<body>
-  <header>Debug Monitor</header>
-  <main>
-    <section>
-      <h2>Petición</h2>
-      <textarea id="requestInput" rows="4" placeholder="Escribe la URL o parámetros..."></textarea>
-      <div class="controls">
-        <button onclick="sendRequest()">Enviar</button>
+<body data-theme="dark">
+  <div class="container">
+
+    <header>
+      <h1>Debug Panel</h1>
+      <div class="top-controls">
+        <button class="theme-toggle" id="themeToggle">Modo claro</button>
+        <a href="/debug.html" class="ghost small" style="text-decoration:none; color:var(--muted)">Refrescar</a>
       </div>
-      <div class="progress-bar"><div id="progress" class="progress"></div></div>
+    </header>
+
+    <!-- ARCHIVOS -->
+    <section class="panel" aria-labelledby="archivos-title">
+      <h2 id="archivos-title">Archivos</h2>
+      <div class="controls">
+        <button class="primary" id="btnCargarArchivos">Cargar estructura</button>
+        <button class="ghost" id="btnCopyFiles">Copiar árbol</button>
+        <button class="download-btn" id="btnDownloadFiles">Descargar</button>
+      </div>
+      <div class="progress-container" aria-hidden>
+        <div id="progressArchivos" class="progress-bar"></div>
+      </div>
+      <div id="statusArchivos" class="status small">Esperando...</div>
+      <pre id="fileTree" class="file-tree">Pulsa "Cargar estructura" para ver los archivos...</pre>
     </section>
 
-    <section>
-      <h2>Resultado</h2>
-      <pre id="resultBox">Esperando datos...</pre>
-      <div class="controls">
-        <button onclick="downloadJSON()">Descargar JSON</button>
+    <!-- GRAFO -->
+    <section class="panel" aria-labelledby="grafo-title">
+      <h2 id="grafo-title">Petición de grafo</h2>
+      <div class="row">
+        <input type="text" id="grafoUrl" placeholder="/api/grafo" value="/api/grafo" />
+        <div style="display:flex; gap:8px;">
+          <button class="primary" onclick="cargarJSON('grafoUrl','grafoOutput','progressGrafo','statusGrafo')">Cargar</button>
+          <button class="download-btn" onclick="descargarJSON('grafoUrl')">Descargar</button>
+        </div>
       </div>
+
+      <div class="progress-container" aria-hidden>
+        <div id="progressGrafo" class="progress-bar"></div>
+      </div>
+      <div id="statusGrafo" class="status small">Esperando...</div>
+      <textarea id="grafoOutput" class="output" readonly placeholder="La respuesta JSON del grafo aparecerá aquí..."></textarea>
     </section>
 
-    <section style="grid-column: span 2;">
-      <h2>Logs</h2>
-      <div id="log"></div>
+    <!-- RUTA -->
+    <section class="panel" aria-labelledby="ruta-title">
+      <h2 id="ruta-title">Petición de ruta</h2>
+      <div class="row">
+        <input type="text" id="rutaUrl" placeholder="/api/ruta?origen=25&destino=88" value="/api/ruta" />
+        <div style="display:flex; gap:8px;">
+          <button class="primary" onclick="cargarJSON('rutaUrl','rutaOutput','progressRuta','statusRuta')">Cargar</button>
+          <button class="download-btn" onclick="descargarJSON('rutaUrl')">Descargar</button>
+        </div>
+      </div>
+
+      <div class="progress-container" aria-hidden>
+        <div id="progressRuta" class="progress-bar"></div>
+      </div>
+      <div id="statusRuta" class="status small">Esperando...</div>
+      <textarea id="rutaOutput" class="output" readonly placeholder="La respuesta JSON de la ruta aparecerá aquí..."></textarea>
     </section>
-  </main>
+
+  </div>
 
   <script>
-    function logMessage(msg) {
-      const log = document.getElementById("log");
-      log.innerHTML += `<div>${new Date().toLocaleTimeString()} - ${msg}</div>`;
-      log.scrollTop = log.scrollHeight;
-    }
-
-    function sendRequest() {
-      const input = document.getElementById("requestInput").value.trim();
-      if (!input) {
-        logMessage("⚠️ No se ingresó ninguna petición");
-        return;
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    function setTheme(theme) {
+      if (theme === 'light') {
+        body.setAttribute('data-theme','light');
+        themeToggle.textContent = 'Modo oscuro';
+      } else {
+        body.setAttribute('data-theme','dark');
+        themeToggle.textContent = 'Modo claro';
       }
+    }
+    // default dark
+    setTheme('dark');
+    themeToggle.addEventListener('click', () => {
+      const cur = body.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      setTheme(cur === 'light' ? 'dark' : 'light');
+    });
 
-      logMessage(`📡 Enviando petición: ${input}`);
-      const progress = document.getElementById("progress");
-      progress.style.width = "0%";
-
-      // Simulación de barra de carga
-      let p = 0;
+    // progress simulation helper
+    function simulateProgress(barId) {
+      const bar = document.getElementById(barId);
+      bar.style.width = '0%';
+      let progress = 0;
       const interval = setInterval(() => {
-        p += 10;
-        progress.style.width = p + "%";
-        if (p >= 100) clearInterval(interval);
-      }, 200);
-
-      // Simulación de resultado
-      fetch(input)
-        .then(res => res.text())
-        .then(data => {
-          document.getElementById("resultBox").textContent = data;
-          logMessage("✅ Petición completada");
-        })
-        .catch(err => {
-          document.getElementById("resultBox").textContent = "❌ Error: " + err.message;
-          logMessage("❌ Error en la petición");
-        });
+        progress = Math.min(90, progress + Math.random()*12);
+        bar.style.width = progress + '%';
+      }, 180);
+      return interval;
     }
 
-    function downloadJSON() {
-      const data = document.getElementById("resultBox").textContent;
-      const blob = new Blob([data], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "debug.json";
+    // cargarArchivos
+    async function cargarArchivos() {
+      const btn = document.getElementById('btnCargarArchivos');
+      btn.disabled = true;
+      const progressInterval = simulateProgress('progressArchivos');
+      const status = document.getElementById('statusArchivos');
+      status.textContent = 'Cargando...';
+      try {
+        const res = await fetch('/debug-files');
+        const text = await res.text();
+        document.getElementById('fileTree').textContent = text;
+        document.getElementById('progressArchivos').style.width = '100%';
+        status.textContent = 'Completado';
+      } catch (err) {
+        status.textContent = 'Error';
+        document.getElementById('fileTree').textContent = 'Error: ' + (err.message || err);
+      } finally {
+        clearInterval(progressInterval);
+        setTimeout(()=> { document.getElementById('progressArchivos').style.width = '0%'; btn.disabled = false; }, 700);
+      }
+    }
+
+    document.getElementById('btnCargarArchivos').addEventListener('click', cargarArchivos);
+
+    // copy tree
+    document.getElementById('btnCopyFiles').addEventListener('click', async ()=>{
+      const txt = document.getElementById('fileTree').textContent || '';
+      try {
+        await navigator.clipboard.writeText(txt);
+        alert('Árbol copiado al portapapeles');
+      } catch (e) {
+        alert('No se pudo copiar: ' + e);
+      }
+    });
+
+    // download files tree
+    document.getElementById('btnDownloadFiles').addEventListener('click', ()=>{
+      const txt = document.getElementById('fileTree').textContent || '';
+      const blob = new Blob([txt], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'debug-files.txt';
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
-      logMessage("💾 Archivo descargado");
+      a.remove();
+    });
+
+    // cargarJSON for grafo or ruta
+    async function cargarJSON(inputId, outputId, progressId, statusId) {
+      const url = document.getElementById(inputId).value;
+      const output = document.getElementById(outputId);
+      const status = document.getElementById(statusId);
+      const progressInterval = simulateProgress(progressId);
+      status.textContent = 'Cargando...';
+
+      try {
+        const res = await fetch(url);
+        const text = await res.text();
+        // try parse JSON
+        try {
+          const data = JSON.parse(text);
+          output.value = JSON.stringify(data, null, 2);
+        } catch (e) {
+          // not JSON
+          output.value = text;
+        }
+        document.getElementById(progressId).style.width = '100%';
+        status.textContent = 'Completado';
+      } catch (err) {
+        status.textContent = 'Error';
+        output.value = 'Error: ' + (err.message || err);
+      } finally {
+        clearInterval(progressInterval);
+        setTimeout(()=> document.getElementById(progressId).style.width = '0%', 600);
+      }
     }
+
+    // descargar JSON
+    async function descargarJSON(inputId) {
+      const url = document.getElementById(inputId).value;
+      try {
+        const res = await fetch(url);
+        const text = await res.text();
+        const filename = sanitizeFilename(url) + '.json';
+        const blob = new Blob([text], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } catch (err) {
+        alert('Error al descargar: ' + (err.message || err));
+      }
+    }
+
+    function sanitizeFilename(s){
+      return s.replace(/[^a-z0-9\-_\.]/gi,'_').slice(0,200);
+    }
+
+    // quick shortcuts: Enter on input triggers load
+    document.getElementById('grafoUrl').addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){ cargarJSON('grafoUrl','grafoOutput','progressGrafo','statusGrafo'); }
+    });
+    document.getElementById('rutaUrl').addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){ cargarJSON('rutaUrl','rutaOutput','progressRuta','statusRuta'); }
+    });
+
+    // prefill examples (optional)
+    // document.getElementById('grafoUrl').value = '/api/grafo';
+    // document.getElementById('rutaUrl').value = '/api/ruta?origen=62&destino=72';
+
   </script>
 </body>
 </html>
