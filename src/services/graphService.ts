@@ -1,4 +1,4 @@
-//src/services/graphService.ts
+// src/services/graphService.ts
 import { writeFileSync, readFileSync } from 'fs';
 import { fetch } from 'undici';
 import * as dotenv from 'dotenv';
@@ -52,9 +52,11 @@ function calcularDistancia(lat1: number, lng1: number, lat2: number, lng2: numbe
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLng = (lng2 - lng1) * Math.PI / 180;
-  const a = Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLng / 2) ** 2;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) *
+      Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLng / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
@@ -64,10 +66,13 @@ function estaEnMexico(lat: number, lng: number): boolean {
 }
 
 function normalizar(s: string): string {
-  return s.normalize("NFD").replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
+  return s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
 }
 
-async function obtenerDistanciaRuta(origen: Nodo, destino: Nodo): Promise<{ distancia: number, polyline: string } | null> {
+async function obtenerDistanciaRuta(
+  origen: Nodo,
+  destino: Nodo
+): Promise<{ distancia: number; polyline: string } | null> {
   const url = 'https://routes.googleapis.com/directions/v2:computeRoutes';
   const body = {
     origin: { location: { latLng: { latitude: origen.lat, longitude: origen.lng } } },
@@ -82,7 +87,8 @@ async function obtenerDistanciaRuta(origen: Nodo, destino: Nodo): Promise<{ dist
       headers: {
         'Content-Type': 'application/json',
         'X-Goog-Api-Key': GOOGLE_API_KEY,
-        'X-Goog-FieldMask': 'routes.distanceMeters,routes.polyline.encodedPolyline',
+        'X-Goog-FieldMask':
+          'routes.distanceMeters,routes.polyline.encodedPolyline',
       },
       body: JSON.stringify(body),
     });
@@ -90,7 +96,7 @@ async function obtenerDistanciaRuta(origen: Nodo, destino: Nodo): Promise<{ dist
     const data = (await res.json()) as unknown as GoogleRoutesResponse;
     const route = data.routes?.[0];
 
-  if (route?.distanceMeters && route?.polyline?.encodedPolyline) {
+    if (route?.distanceMeters && route?.polyline?.encodedPolyline) {
       return {
         distancia: route.distanceMeters / 1000,
         polyline: route.polyline.encodedPolyline,
@@ -104,8 +110,11 @@ async function obtenerDistanciaRuta(origen: Nodo, destino: Nodo): Promise<{ dist
 
 function construirClusters(nodos: Nodo[], aristas: Arista[]): number[] {
   const parent = nodos.map((_, i) => i);
-  const find = (x: number): number => (parent[x] === x ? x : parent[x] = find(parent[x]));
-  const union = (x: number, y: number) => { parent[find(x)] = find(y); };
+  const find = (x: number): number =>
+    parent[x] === x ? x : (parent[x] = find(parent[x]));
+  const union = (x: number, y: number) => {
+    parent[find(x)] = find(y);
+  };
   for (const { origen, destino } of aristas) union(origen, destino);
   return parent.map(find);
 }
@@ -122,11 +131,42 @@ async function conectarClusters(nodos: Nodo[], aristas: Arista[]) {
   const clusters = Array.from(clusterMap.values());
   console.log(`🔗 Detectados ${clusters.length} clusters`);
 
-  if (clusters.length <= 1) return;
+  // Si hay un solo cluster pero nodos aislados, intentar conectarlos igual
+  if (clusters.length <= 1 && nodos.length > 1) {
+    console.log('🔍 Revisión de conexiones internas para nodos aislados');
+    const conexionesActuales = new Set(
+      aristas.map(a => `${a.origen}-${a.destino}`)
+    );
 
+    for (let i = 0; i < nodos.length; i++) {
+      for (let j = i + 1; j < nodos.length; j++) {
+        const clave1 = `${nodos[i].id}-${nodos[j].id}`;
+        const clave2 = `${nodos[j].id}-${nodos[i].id}`;
+        if (!conexionesActuales.has(clave1) && !conexionesActuales.has(clave2)) {
+          const ruta = await obtenerDistanciaRuta(nodos[i], nodos[j]);
+          if (ruta) {
+            aristas.push({
+              origen: nodos[i].id,
+              destino: nodos[j].id,
+              distancia: ruta.distancia,
+              peso: ruta.distancia,
+              polyline: ruta.polyline,
+            });
+            console.log(`➕ Conexión añadida entre ${nodos[i].id} y ${nodos[j].id}`);
+            return; // Conectar solo la más cercana para evitar sobrecarga
+          }
+        }
+      }
+    }
+    return;
+  }
+
+  // Conexión entre clusters diferentes
   for (let i = 0; i < clusters.length - 1; i++) {
     let mejorDist = Infinity;
-    let mejorRuta: { a: Nodo; b: Nodo; ruta: Awaited<ReturnType<typeof obtenerDistanciaRuta>> | null } | null = null;
+    let mejorRuta:
+      | { a: Nodo; b: Nodo; ruta: Awaited<ReturnType<typeof obtenerDistanciaRuta>> | null }
+      | null = null;
 
     for (const a of clusters[i]) {
       for (const b of clusters[i + 1]) {
@@ -155,15 +195,24 @@ async function conectarClusters(nodos: Nodo[], aristas: Arista[]) {
   }
 }
 
-export async function generarGrafo(estados: string[] = []): Promise<{ nodos: Nodo[], aristas: Arista[] }> {
+export async function generarGrafo(
+  estados: string[] = []
+): Promise<{ nodos: Nodo[]; aristas: Arista[] }> {
   const estadosNorm = estados.map(normalizar);
-  const datos: Oficina[] = JSON.parse(readFileSync('src/data/oficinas_coordenadas.json', 'utf-8'));
+  const datos: Oficina[] = JSON.parse(
+    readFileSync('src/data/oficinas_coordenadas.json', 'utf-8')
+  );
 
-  const filtradas = estados.length > 0
-    ? datos.filter(of => estadosNorm.includes(normalizar(of.nombre_entidad)))
-    : datos;
+  const filtradas =
+    estados.length > 0
+      ? datos.filter(of =>
+          estadosNorm.includes(normalizar(of.nombre_entidad))
+        )
+      : datos;
 
-  const validas = filtradas.filter(d => estaEnMexico(d.latitud, d.longitud));
+  const validas = filtradas.filter(d =>
+    estaEnMexico(d.latitud, d.longitud)
+  );
   const nodos: Nodo[] = validas.map((o, i) => ({
     id: i,
     nombre: o.nombre_cuo,
@@ -188,7 +237,10 @@ export async function generarGrafo(estados: string[] = []): Promise<{ nodos: Nod
     const nodo = nodos[i];
     const vecinos = nodos
       .filter(n => n.id !== nodo.id)
-      .map(n => ({ destino: n, distancia: calcularDistancia(nodo.lat, nodo.lng, n.lat, n.lng) }))
+      .map(n => ({
+        destino: n,
+        distancia: calcularDistancia(nodo.lat, nodo.lng, n.lat, n.lng),
+      }))
       .sort((a, b) => a.distancia - b.distancia);
 
     let conexiones = 0;
@@ -216,13 +268,21 @@ export async function generarGrafo(estados: string[] = []): Promise<{ nodos: Nod
   await conectarClusters(nodos, aristas);
 
   const grafo = { nodos, aristas };
-  writeFileSync('src/data/grafo.json', JSON.stringify(grafo, null, 2), 'utf-8');
+  writeFileSync(
+    'src/data/grafo.json',
+    JSON.stringify(grafo, null, 2),
+    'utf-8'
+  );
   console.log('✅ grafo.json generado correctamente.');
   return grafo;
 }
 
 if (require.main === module) {
   const argv = minimist(process.argv.slice(2));
-  const estados = Array.isArray(argv.estado) ? argv.estado : argv.estado ? [argv.estado] : [];
+  const estados = Array.isArray(argv.estado)
+    ? argv.estado
+    : argv.estado
+    ? [argv.estado]
+    : [];
   generarGrafo(estados);
 }

@@ -26,7 +26,7 @@
       --accent: #2563eb;
       --accent-2: #16a34a;
       --box-bg: #ffffff;
-      --pre-bg: #0f172a;
+      --pre-bg: #f3f4f6;
       --success: #059669;
       --danger: #dc2626;
     }
@@ -34,13 +34,21 @@
     html, body {
       margin: 0;
       font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
+      background: var(--bg);
       background: linear-gradient(180deg,var(--bg), #071027);
       color: var(--text);
       padding: 20px;
+      transition: background 0.3s, color 0.3s;
     }
 
-    h1, h2 {
+    [data-theme="light"] body {
+      background: var(--bg);
+      background: #f9fafb;
+    }
+
+    h1, h2, h3 {
       margin-top: 0;
+      color: var(--text);
     }
 
     section {
@@ -49,7 +57,8 @@
       padding: 14px;
       margin-bottom: 18px;
       border: 1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+      box-shadow: 0 6px 18px rgba(2,6,23,0.2);
+      transition: background 0.3s, border-color 0.3s;
     }
 
     pre {
@@ -61,6 +70,7 @@
       position: relative;
       border: 1px solid rgba(255,255,255,0.04);
       font-family: monospace;
+      transition: background 0.3s, color 0.3s;
     }
 
     code {
@@ -98,6 +108,7 @@
       border-radius:6px;
       cursor:pointer;
       margin-bottom: 16px;
+      transition: color 0.3s, border-color 0.3s;
     }
   </style>
 </head>
