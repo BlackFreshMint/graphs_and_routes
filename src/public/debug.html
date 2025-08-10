@@ -397,5 +397,142 @@
     // document.getElementById('rutaUrl').value = '/api/ruta?origen=62&destino=72';
 
   </script>
+
+  <!-- NUEVO: Botón y mapa para visualizar grafo y ruta -->
+  <button id="toggleMapBtn" style="
+    margin: 20px auto;
+    display: block;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+  ">Mostrar/ocultar mapa con grafo y rutas</button>
+
+  <div id="map" style="
+    width: 100%;
+    height: 500px;
+    margin-top: 10px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+    display: none;
+  "></div>
+
+  <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&libraries=geometry"></script>
+  <script>
+    let map;
+    let markers = [];
+    let baseLines = [];
+    let rutasVisibles = [];
+
+    async function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 23.6345, lng: -102.5528 },
+        zoom: 5,
+      });
+
+      const response = await fetch("src/data/grafo.json");
+      const grafo = await response.json();
+
+      const nodos = grafo.nodos;
+      const aristas = grafo.aristas;
+
+      // Limpiar previos (por si reabre)
+      markers.forEach(m => m.setMap(null));
+      baseLines.forEach(l => l.setMap(null));
+      rutasVisibles.forEach(r => r.setMap(null));
+      markers = [];
+      baseLines = [];
+      rutasVisibles = [];
+
+      // Dibujar nodos
+      nodos.forEach(nodo => {
+        const marker = new google.maps.Marker({
+          position: { lat: nodo.lat, lng: nodo.lng },
+          map,
+          title: `${nodo.nombre} (${nodo.id})`,
+        });
+
+        marker.addListener("click", () => {
+          limpiarRutas();
+          mostrarRutasNodo(nodo, aristas);
+        });
+
+        markers.push(marker);
+      });
+
+      // Dibujar aristas básicas (líneas grises)
+      aristas.forEach(arista => {
+        const origen = nodos.find(n => n.id === arista.origen);
+        const destino = nodos.find(n => n.id === arista.destino);
+        if (!origen || !destino) return;
+
+        const line = new google.maps.Polyline({
+          path: [
+            { lat: origen.lat, lng: origen.lng },
+            { lat: destino.lat, lng: destino.lng }
+          ],
+          geodesic: true,
+          strokeColor: "#888",
+          strokeOpacity: 0.6,
+          strokeWeight: 2,
+          map,
+        });
+
+        line.addListener("click", () => {
+          limpiarRutas();
+          mostrarRutaPolyline(arista);
+        });
+
+        baseLines.push(line);
+      });
+    }
+
+    function mostrarRutaPolyline(arista) {
+      if (!arista.polyline) return;
+      const path = google.maps.geometry.encoding.decodePath(arista.polyline);
+      const ruta = new google.maps.Polyline({
+        path,
+        geodesic: true,
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.9,
+        strokeWeight: 4,
+        map,
+      });
+      rutasVisibles.push(ruta);
+      map.fitBounds(getBoundsFromPath(path));
+    }
+
+    function mostrarRutasNodo(nodo, aristas) {
+      const rutasNodo = aristas.filter(a => a.origen === nodo.id || a.destino === nodo.id);
+      rutasNodo.forEach(a => mostrarRutaPolyline(a));
+    }
+
+    function limpiarRutas() {
+      rutasVisibles.forEach(r => r.setMap(null));
+      rutasVisibles = [];
+    }
+
+    function toggleMap() {
+      const mapDiv = document.getElementById('map');
+      if (mapDiv.style.display === 'none' || mapDiv.style.display === '') {
+        mapDiv.style.display = 'block';
+        if (!map) initMap();
+      } else {
+        mapDiv.style.display = 'none';
+        limpiarRutas();
+      }
+    }
+
+    function getBoundsFromPath(path) {
+      const bounds = new google.maps.LatLngBounds();
+      path.forEach(p => bounds.extend(p));
+      return bounds;
+    }
+
+    document.getElementById('toggleMapBtn').addEventListener('click', toggleMap);
+  </script>
 </body>
 </html>
