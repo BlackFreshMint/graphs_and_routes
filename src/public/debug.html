@@ -1,202 +1,439 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<!-- saved from url=(0014)about:internet -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Debug Panel</title>
 
-  <style>
-    :root{
-      --bg: #0f172a;
-      --panel: #0b1220;
-      --muted: #94a3b8;
-      --text: #e6eef8;
-      --accent: #3b82f6;
-      --accent-2: #4caf50;
-      --box-bg: #0b1220;
-      --pre-bg: #071225;
-      --success: #10b981;
-      --danger: #ef4444;
-    }
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f4f8;
+    color: #333;
+    margin: 0;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
-    [data-theme="light"]{
-      --bg: #f9fafb;
-      --panel: #ffffff;
-      --muted: #6b7280;
-      --text: #0f172a;
-      --accent: #2563eb;
-      --accent-2: #16a34a;
-      --box-bg: #ffffff;
-      --pre-bg: #0f172a;
-      --success: #059669;
-      --danger: #dc2626;
-    }
+  h1 {
+    color: #007acc;
+    margin-bottom: 1rem;
+  }
 
-    html,body {
-      margin: 0;
-      font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
-      background: linear-gradient(180deg,var(--bg), #071027);
-      color: var(--text);
-    }
+  h2 {
+    margin-top: 2rem;
+    margin-bottom: 0.8rem;
+    width: 100%;
+    max-width: 700px;
+    text-align: center;
+  }
 
-    .container {
-      max-width: 1200px;
-      margin: 24px auto;
-      padding: 20px;
-    }
+  h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+    max-width: 700px;
+  }
 
-    header {
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom: 18px;
-    }
+  section {
+    max-width: 60%;
+    width: 100%;
+    background: white;
+    padding: 1.2rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    margin-bottom: 1.5rem;
+    color: #222;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
-    header h1 {
-      margin:0;
-      font-size:20px;
-      font-weight:600;
-    }
+  pre,
+  textarea.output {
+    background: #e3e8f0;
+    border-radius: 5px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-family: Consolas, monospace;
+    font-size: 0.95rem;
+    position: relative;
+    margin-bottom: 1rem;
+    color: #1e293b;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
-    .top-controls {
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
+  pre.file-tree {
+    height: 240px;
+    overflow: auto;
+    white-space: pre-wrap;
+  }
 
-    .theme-toggle {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.06);
-      color: var(--text);
-      padding: 6px 10px;
-      border-radius:6px;
-      cursor:pointer;
-    }
+  textarea.output {
+    height: 420px;
+    overflow: auto;
+    width: 94%;
+  }
 
-    .panel {
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
-      border-radius:10px;
-      padding:14px;
-      border: 1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 6px 18px rgba(2,6,23,0.6);
-      margin-bottom: 18px;
-    }
+  button.copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.6rem;
+    background: #007acc;
+    border: none;
+    color: white;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+  }
 
-    h2 { margin: 0 0 10px 0; font-size:16px; color:var(--text); }
+  button.copy-btn:hover {
+    background: #005fa3;
+  }
 
-    .controls {
-      display:flex;
-      gap:8px;
-      margin-bottom:8px;
-    }
+  .output-box {
+    background: #f9fafb;
+    border-left: 4px solid #007acc;
+    padding: 1rem;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    color: #334155;
+    font-family: monospace;
+    font-size: 0.95rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 
+  a {
+    color: #007acc;
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s;
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 1rem;
+  }
+
+  a:hover {
+    border-color: #007acc;
+  }
+
+  /* Modo oscuro */
+  body.dark-mode {
+    background: #121212;
+    color: #cbd5e1;
+  }
+
+  body.dark-mode h1 {
+    color: #66aaff;
+  }
+
+  body.dark-mode h2 {
+    color: white;
+  }
+
+  body.dark-mode h3 {
+    color: white;
+  }
+
+  body.dark-mode section {
+    background: #0b1220;
+    color: #cbd5e1;
+  }
+
+  body.dark-mode pre,
+  body.dark-mode textarea.output {
+    background: #101010;
+    color: #cbd5e1;
+  }
+
+  body.dark-mode .output-box {
+    background: #0b1220;
+    border-left-color: #3b82f6;
+    color: #cbd5e1;
+  }
+
+  body.dark-mode button.copy-btn {
+    background: #3b82f6;
+  }
+
+  body.dark-mode button.copy-btn:hover {
+    background: #2563eb;
+  }
+
+  body.dark-mode a {
+    color: #3b82f6;
+    border-bottom-color: transparent;
+  }
+
+  body.dark-mode a:hover {
+    border-bottom-color: #3b82f6;
+  }
+
+  /* Botón toggle tema */
+  #darkModeToggle {
+    position: fixed;
+    right: 2rem;
+    background: transparent;
+    color: #007acc;
+    padding: 6px 12px;
+    border: 1px solid #007acc;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+    z-index: 1000;
+  }
+
+  #darkModeToggle:hover {
+    background: #007acc;
+    color: white;
+  }
+
+  body.dark-mode #darkModeToggle {
+    color: #3b82f6;
+    border-color: #3b82f6;
+  }
+
+  body.dark-mode #darkModeToggle:hover {
+    background: #3b82f6;
+    color: white;
+  }
+
+  /* Debug-specific panel styles */
+  .container {
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 20px;
+    width: 100%;
+  }
+
+  header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .top-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .theme-toggle {
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    color: inherit;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .panel {
+    background: white;
+    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 6px 18px rgba(2, 6, 23, 0.04);
+    margin-bottom: 18px;
+    transition: background 0.28s, border-color 0.28s;
+  }
+
+  body.dark-mode .panel {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+
+  }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  input[type="text"] {
+    background: #e3e8f0;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    color: inherit;
+    padding: 8px;
+    border-radius: 6px;
+    width: 70%;
+    font-family: monospace;
+  }
+
+  body.dark-mode input[type="text"] {
+    background: #212121;
+    color: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  button.primary {
+    background: #007acc;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  button.ghost {
+    background: transparent;
+    color: #6b7280;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .download-btn {
+    background: transparent;
+    color: inherit;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  body.dark-mode .ghost,
+  body.dark-mode .download-btn {
+    border-color: rgba(255, 255, 255, 0.04);
+    color: #6b7280;
+  }
+
+  .progress-container {
+    height: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 8px;
+    margin-bottom: 6px;
+  }
+
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #4caf50, #007acc);
+    transition: width 300ms linear;
+  }
+
+  .status {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 6px;
+  }
+
+  .small {
+    font-size: 13px;
+    color: #6b7280;
+  }
+
+  .row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  #grafoOutput,
+  #rutaOutput {
+    background: #e3e8f0;
+    border-radius: 5px;
+    padding: 1rem;
+
+    border: none;
+    outline: none;
+    box-shadow: none;
+    overflow-x: auto;
+    overflow-y: auto;
+    font-family: Consolas, monospace;
+    font-size: 0.95rem;
+    position: relative;
+    margin-bottom: 1rem;
+    color: #1e293b;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    height: 240px;
+    white-space: pre-wrap;
+    resize: none; /* evita que el usuario cambie tamaño y rompa el layout */
+  }
+
+  #grafoOutput:focus,
+  #rutaOutput:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  @media (max-width: 900px) {
     input[type="text"] {
-      background: var(--box-bg);
-      border: 1px solid rgba(255,255,255,0.04);
-      color: var(--text);
-      padding:8px;
-      border-radius:6px;
-      width: 70%;
-      font-family: monospace;
-    }
-
-    button.primary {
-      background: #145dbf;
-      color:white;
-      border:none;
-      padding:8px 12px;
-      border-radius:6px;
-      cursor:pointer;
-    }
-    button.ghost {
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid rgba(255,255,255,0.03);
-      padding:8px 10px;
-      border-radius:6px;
-      cursor:pointer;
-    }
-
-    .progress-container {
-      height:8px;
-      background: rgba(255,255,255,0.03);
-      border-radius:6px;
-      overflow:hidden;
-      margin-top:8px;
-      margin-bottom:6px;
-    }
-    .progress-bar {
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg,var(--accent-2), var(--accent));
-      transition: width 300ms linear;
-    }
-
-    .status {
-      font-size:12px;
-      color:var(--muted);
-      margin-bottom:6px;
-    }
-
-    pre, textarea {
-      width:98%;
-      background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02));
-      border-radius:8px;
-      border: 1px solid rgba(255,255,255,0.04);
-      padding:12px;
-      color: var(--text);
-      font-family: monospace;
-      resize: vertical;
-    }
-
-    pre.file-tree {
-      height: 240px;
-      overflow:auto;
-      white-space: pre-wrap;
-    }
-
-    textarea.output {
-      height: 420px;
-      overflow:auto;
-    }
-
-    .small {
-      font-size:13px;
+      width: 100%;
     }
 
     .row {
-      display:flex;
-      gap:12px;
-      align-items:center;
+      flex-direction: column;
+      align-items: flex-start;
     }
 
-    .download-btn {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid rgba(255,255,255,0.04);
-      padding:8px 12px;
-      border-radius:6px;
-      cursor:pointer;
+    textarea.output {
+      height: 260px;
     }
 
-    @media (max-width: 900px) {
-      input[type="text"]{ width:100% }
-      .row{ flex-direction:column; align-items:flex-start }
-      textarea.output{ height: 260px }
-      pre.file-tree{ height: 200px }
+    pre.file-tree {
+      height: 200px;
     }
-  </style>
+
+    #grafoOutput,
+    #rutaOutput {
+      height: 200px;
+    }
+  }
+
+  #toggleMapBtn {
+    margin: 20px auto;
+    display: block;
+    background: #007acc;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  #map {
+    width: 100%;
+    height: 500px;
+    margin-top: 10px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(2, 6, 23, 0.6);
+    display: none;
+  }
+
+  /* Modo oscuro específico para los ids */
+  body.dark-mode #grafoOutput,
+  body.dark-mode #rutaOutput {
+    background: #101010;
+    color: #cbd5e1;
+  }
+</style>
+
 </head>
-<body data-theme="dark">
-  <div class="container">
+<body class="dark-mode">
+  <!-- Floating theme button -->
+  <button id="darkModeToggle" aria-pressed="true">Modo Claro</button>
+
+  <div class="container" style=" display: flex; flex-flow: column; align-items: center;">
 
     <header>
       <h1>Debug Panel</h1>
-      <div class="top-controls">
-        <button class="theme-toggle" id="themeToggle">Light Mode</button>
-        <a href="/debug.html" class="ghost small" style="text-decoration:none; color:var(--muted)">Refrescar</a>
-      </div>
     </header>
 
     <!-- ARCHIVOS -->
@@ -207,74 +444,92 @@
         <button class="ghost" id="btnCopyFiles">Copiar árbol</button>
         <button class="download-btn" id="btnDownloadFiles">Descargar</button>
       </div>
-      <div class="progress-container" aria-hidden>
+      <div class="progress-container" aria-hidden="">
         <div id="progressArchivos" class="progress-bar"></div>
       </div>
       <div id="statusArchivos" class="status small">Esperando...</div>
-      <pre id="fileTree" class="file-tree">Pulsa "Cargar estructura" para ver los archivos...</pre>
+      <pre id="fileTree" class="file-tree" style="color: #757575;">Pulsa "Cargar estructura" para ver los archivos...</pre>
     </section>
 
     <!-- GRAFO -->
     <section class="panel" aria-labelledby="grafo-title">
       <h2 id="grafo-title">Petición de grafo</h2>
       <div class="row">
-        <input type="text" id="grafoUrl" placeholder="/api/grafo" value="/api/grafo" />
+        <input type="text" id="grafoUrl" placeholder="/api/grafo" value="/api/grafo">
         <div style="display:flex; gap:8px;">
-          <button class="primary" onclick="cargarJSON('grafoUrl','grafoOutput','progressGrafo','statusGrafo')">Cargar</button>
-          <button class="download-btn" onclick="descargarJSON('grafoUrl')">Descargar</button>
+          <button class="primary" id="btnCargarGrafo">Cargar</button>
+          <button class="download-btn" id="btnDescargarGrafo">Descargar</button>
         </div>
       </div>
 
-      <div class="progress-container" aria-hidden>
+      <div class="progress-container" aria-hidden="">
         <div id="progressGrafo" class="progress-bar"></div>
       </div>
       <div id="statusGrafo" class="status small">Esperando...</div>
-      <textarea id="grafoOutput" class="output" readonly placeholder="La respuesta JSON del grafo aparecerá aquí..."></textarea>
+      <textarea id="grafoOutput" class="output" readonly="" placeholder="La respuesta JSON del grafo aparecerá aquí..."></textarea>
     </section>
 
     <!-- RUTA -->
     <section class="panel" aria-labelledby="ruta-title">
       <h2 id="ruta-title">Petición de ruta</h2>
       <div class="row">
-        <input type="text" id="rutaUrl" placeholder="/api/ruta?origen=25&destino=88" value="/api/ruta" />
+        <input type="text" id="rutaUrl" placeholder="/api/ruta?origen=25&amp;destino=88" value="/api/ruta">
         <div style="display:flex; gap:8px;">
-          <button class="primary" onclick="cargarJSON('rutaUrl','rutaOutput','progressRuta','statusRuta')">Cargar</button>
-          <button class="download-btn" onclick="descargarJSON('rutaUrl')">Descargar</button>
+          <button class="primary" id="btnCargarRuta">Cargar</button>
+          <button class="download-btn" id="btnDescargarRuta">Descargar</button>
         </div>
       </div>
 
-      <div class="progress-container" aria-hidden>
+      <div class="progress-container" aria-hidden="">
         <div id="progressRuta" class="progress-bar"></div>
       </div>
       <div id="statusRuta" class="status small">Esperando...</div>
-      <textarea id="rutaOutput" class="output" readonly placeholder="La respuesta JSON de la ruta aparecerá aquí..."></textarea>
+      <textarea id="rutaOutput" class="output" readonly="" placeholder="La respuesta JSON de la ruta aparecerá aquí..."></textarea>
     </section>
 
   </div>
 
-  <script>
-    // Theme toggle
-    const themeToggle = document.getElementById('themeToggle');
-    const body = document.body;
-    function setTheme(theme) {
-      if (theme === 'light') {
-        body.setAttribute('data-theme','light');
-        themeToggle.textContent = 'Dark Mode';
-      } else {
-        body.setAttribute('data-theme','dark');
-        themeToggle.textContent = 'Light Mode';
-      }
-    }
-    // default dark
-    setTheme('dark');
-    themeToggle.addEventListener('click', () => {
-      const cur = body.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-      setTheme(cur === 'light' ? 'dark' : 'light');
-    });
+  <button id="toggleMapBtn">Mostrar/ocultar mapa con grafo y rutas</button>
+  <div id="map"></div>
 
-    // progress simulation helper
+  <script>
+    const headerThemeBtn = document.getElementById('themeToggle');
+    const floatingThemeBtn = document.getElementById('darkModeToggle');
+    const bodyEl = document.body;
+
+    function applyTheme(theme) {
+      if (theme === 'dark-mode' || theme === 'dark') {
+        bodyEl.classList.add('dark-mode');
+      } else {
+        bodyEl.classList.remove('dark-mode');
+      }
+      updateToggleText();
+      try { localStorage.setItem('debug_theme', theme); } catch(e){}
+    }
+
+    function toggleTheme() {
+      const isDark = bodyEl.classList.contains('dark-mode');
+      applyTheme(isDark ? 'light' : 'dark-mode');
+    }
+
+    function updateToggleText() {
+      const isDark = bodyEl.classList.contains('dark-mode');
+      const txt = isDark ? 'Modo Claro' : 'Modo Oscuro';
+      if (headerThemeBtn) headerThemeBtn.textContent = txt;
+      if (floatingThemeBtn) floatingThemeBtn.textContent = txt;
+      if (floatingThemeBtn) floatingThemeBtn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+    }
+
+    (function initTheme(){
+      const saved = localStorage.getItem('debug_theme') || 'dark-mode';
+      applyTheme(saved);
+      if (headerThemeBtn) headerThemeBtn.addEventListener('click', toggleTheme);
+      if (floatingThemeBtn) floatingThemeBtn.addEventListener('click', toggleTheme);
+    })();
+
     function simulateProgress(barId) {
       const bar = document.getElementById(barId);
+      if (!bar) return null;
       bar.style.width = '0%';
       let progress = 0;
       const interval = setInterval(() => {
@@ -284,7 +539,6 @@
       return interval;
     }
 
-    // cargarArchivos
     async function cargarArchivos() {
       const btn = document.getElementById('btnCargarArchivos');
       btn.disabled = true;
@@ -293,6 +547,7 @@
       status.textContent = 'Cargando...';
       try {
         const res = await fetch('/debug-files');
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
         const text = await res.text();
         document.getElementById('fileTree').textContent = text;
         document.getElementById('progressArchivos').style.width = '100%';
@@ -301,11 +556,10 @@
         status.textContent = 'Error';
         document.getElementById('fileTree').textContent = 'Error: ' + (err.message || err);
       } finally {
-        clearInterval(progressInterval);
+        if (progressInterval) clearInterval(progressInterval);
         setTimeout(()=> { document.getElementById('progressArchivos').style.width = '0%'; btn.disabled = false; }, 700);
       }
     }
-
     document.getElementById('btnCargarArchivos').addEventListener('click', cargarArchivos);
 
     // copy tree
@@ -331,7 +585,7 @@
       a.remove();
     });
 
-    // cargarJSON for grafo or ruta
+    /* ================= GRAFO & RUTA fetch helpers ================= */
     async function cargarJSON(inputId, outputId, progressId, statusId) {
       const url = document.getElementById(inputId).value;
       const output = document.getElementById(outputId);
@@ -341,6 +595,7 @@
 
       try {
         const res = await fetch(url);
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
         const text = await res.text();
         // try parse JSON
         try {
@@ -356,16 +611,16 @@
         status.textContent = 'Error';
         output.value = 'Error: ' + (err.message || err);
       } finally {
-        clearInterval(progressInterval);
+        if (progressInterval) clearInterval(progressInterval);
         setTimeout(()=> document.getElementById(progressId).style.width = '0%', 600);
       }
     }
 
-    // descargar JSON
     async function descargarJSON(inputId) {
       const url = document.getElementById(inputId).value;
       try {
         const res = await fetch(url);
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
         const text = await res.text();
         const filename = sanitizeFilename(url) + '.json';
         const blob = new Blob([text], { type: 'application/json' });
@@ -381,8 +636,15 @@
     }
 
     function sanitizeFilename(s){
-      return s.replace(/[^a-z0-9\-_\.]/gi,'_').slice(0,200);
+      return (s || 'download').replace(/[^a-z0-9\-_\.]/gi,'_').slice(0,200);
     }
+
+    // wire grafo & ruta buttons
+    document.getElementById('btnCargarGrafo').addEventListener('click', ()=> cargarJSON('grafoUrl','grafoOutput','progressGrafo','statusGrafo'));
+    document.getElementById('btnDescargarGrafo').addEventListener('click', ()=> descargarJSON('grafoUrl'));
+
+    document.getElementById('btnCargarRuta').addEventListener('click', ()=> cargarJSON('rutaUrl','rutaOutput','progressRuta','statusRuta'));
+    document.getElementById('btnDescargarRuta').addEventListener('click', ()=> descargarJSON('rutaUrl'));
 
     // quick shortcuts: Enter on input triggers load
     document.getElementById('grafoUrl').addEventListener('keydown', (e)=>{
@@ -392,36 +654,6 @@
       if(e.key === 'Enter'){ cargarJSON('rutaUrl','rutaOutput','progressRuta','statusRuta'); }
     });
 
-    // prefill examples (optional)
-    // document.getElementById('grafoUrl').value = '/api/grafo';
-    // document.getElementById('rutaUrl').value = '/api/ruta?origen=62&destino=72';
-
-  </script>
-
-  <!-- NUEVO: Botón y mapa para visualizar grafo y ruta -->
-  <button id="toggleMapBtn" style="
-    margin: 20px auto;
-    display: block;
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    font-size: 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-  ">Mostrar/ocultar mapa con grafo y rutas</button>
-
-  <div id="map" style="
-    width: 100%;
-    height: 500px;
-    margin-top: 10px;
-    border-radius: 10px;
-    box-shadow: 0 6px 18px rgba(2,6,23,0.6);
-    display: none;
-  "></div>
-
-  <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&libraries=geometry"></script>
-  <script>
     let map;
     let markers = [];
     let baseLines = [];
@@ -433,76 +665,101 @@
         zoom: 5,
       });
 
-      const response = await fetch("src/data/grafo.json");
-      const grafo = await response.json();
+      try {
+        const response = await fetch("src/data/grafo.json");
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+        const grafo = await response.json();
 
-      const nodos = grafo.nodos;
-      const aristas = grafo.aristas;
+        const nodos = grafo.nodos || [];
+        const aristas = grafo.aristas || [];
+        markers.forEach(m => m.setMap(null));
+        baseLines.forEach(l => l.setMap(null));
+        rutasVisibles.forEach(r => r.setMap(null));
+        markers = [];
+        baseLines = [];
+        rutasVisibles = [];
 
-      // Limpiar previos (por si reabre)
-      markers.forEach(m => m.setMap(null));
-      baseLines.forEach(l => l.setMap(null));
-      rutasVisibles.forEach(r => r.setMap(null));
-      markers = [];
-      baseLines = [];
-      rutasVisibles = [];
+        // Dibujar nodos
+        nodos.forEach(nodo => {
+          const marker = new google.maps.Marker({
+            position: { lat: nodo.lat, lng: nodo.lng },
+            map,
+            title: `${nodo.nombre || 'Nodo'} (${nodo.id})`,
+          });
 
-      // Dibujar nodos
-      nodos.forEach(nodo => {
-        const marker = new google.maps.Marker({
-          position: { lat: nodo.lat, lng: nodo.lng },
-          map,
-          title: `${nodo.nombre} (${nodo.id})`,
+          marker.addListener("click", () => {
+            limpiarRutas();
+            mostrarRutasNodo(nodo, aristas);
+          });
+
+          markers.push(marker);
         });
 
-        marker.addListener("click", () => {
-          limpiarRutas();
-          mostrarRutasNodo(nodo, aristas);
+        // Dibujar aristas básicas (líneas grises)
+        aristas.forEach(arista => {
+          const origen = nodos.find(n => n.id === arista.origen);
+          const destino = nodos.find(n => n.id === arista.destino);
+          if (!origen || !destino) return;
+
+          const line = new google.maps.Polyline({
+            path: [
+              { lat: origen.lat, lng: origen.lng },
+              { lat: destino.lat, lng: destino.lng }
+            ],
+            geodesic: true,
+            strokeColor: "#888",
+            strokeOpacity: 0.6,
+            strokeWeight: 2,
+            map,
+          });
+
+          line.addListener("click", () => {
+            limpiarRutas();
+            mostrarRutaPolyline(arista);
+          });
+
+          baseLines.push(line);
         });
-
-        markers.push(marker);
-      });
-
-      // Dibujar aristas básicas (líneas grises)
-      aristas.forEach(arista => {
-        const origen = nodos.find(n => n.id === arista.origen);
-        const destino = nodos.find(n => n.id === arista.destino);
-        if (!origen || !destino) return;
-
-        const line = new google.maps.Polyline({
-          path: [
-            { lat: origen.lat, lng: origen.lng },
-            { lat: destino.lat, lng: destino.lng }
-          ],
-          geodesic: true,
-          strokeColor: "#888",
-          strokeOpacity: 0.6,
-          strokeWeight: 2,
-          map,
-        });
-
-        line.addListener("click", () => {
-          limpiarRutas();
-          mostrarRutaPolyline(arista);
-        });
-
-        baseLines.push(line);
-      });
+      } catch (err) {
+        console.error('Error al inicializar mapa:', err);
+        alert('No se pudo cargar el grafo para el mapa: ' + (err.message || err));
+      }
     }
 
     function mostrarRutaPolyline(arista) {
-      if (!arista.polyline) return;
-      const path = google.maps.geometry.encoding.decodePath(arista.polyline);
-      const ruta = new google.maps.Polyline({
-        path,
-        geodesic: true,
-        strokeColor: "#FF0000",
-        strokeOpacity: 0.9,
-        strokeWeight: 4,
-        map,
-      });
-      rutasVisibles.push(ruta);
-      map.fitBounds(getBoundsFromPath(path));
+      if (!arista) return;
+      if (!arista.polyline) {
+        // si no hay polyline codificada, trazar una línea simple entre origen/destino (fallback)
+        if (!arista.origen || !arista.destino) return;
+        const path = [];
+        // intentar leer nodos desde archivo cargado en markers (no ideal, fallback visual)
+        rutasVisibles.push(new google.maps.Polyline({
+          path: [
+            // fallback no conoce lat/lng si no estaban
+          ],
+          geodesic: true,
+          strokeColor: "#FF0000",
+          strokeOpacity: 0.9,
+          strokeWeight: 4,
+          map,
+        }));
+        return;
+      }
+      try {
+        const path = google.maps.geometry.encoding.decodePath(arista.polyline);
+        const ruta = new google.maps.Polyline({
+          path,
+          geodesic: true,
+          strokeColor: "#FF0000",
+          strokeOpacity: 0.9,
+          strokeWeight: 4,
+          map,
+        });
+        rutasVisibles.push(ruta);
+        map.fitBounds(getBoundsFromPath(path));
+      } catch (err) {
+        console.error('Error decoding polyline:', err);
+      }
     }
 
     function mostrarRutasNodo(nodo, aristas) {
@@ -513,6 +770,12 @@
     function limpiarRutas() {
       rutasVisibles.forEach(r => r.setMap(null));
       rutasVisibles = [];
+    }
+
+    function getBoundsFromPath(path) {
+      const bounds = new google.maps.LatLngBounds();
+      path.forEach(p => bounds.extend(p));
+      return bounds;
     }
 
     function toggleMap() {
@@ -526,13 +789,9 @@
       }
     }
 
-    function getBoundsFromPath(path) {
-      const bounds = new google.maps.LatLngBounds();
-      path.forEach(p => bounds.extend(p));
-      return bounds;
-    }
-
     document.getElementById('toggleMapBtn').addEventListener('click', toggleMap);
   </script>
-</body>
-</html>
+
+
+
+</body></html>

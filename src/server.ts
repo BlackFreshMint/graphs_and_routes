@@ -13,14 +13,41 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Prevent depoly fail by no API key in env / deplou will stay on event without the key
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || "";
+if (!GOOGLE_API_KEY) {
+  console.warn("Advertencia: GOOGLE_API_KEY no está definida. Funciones dependientes de Google Maps estarán deshabilitadas o usarán datos de prueba.");
+}
+
 app.use(cors());
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+//index
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+
+//Middleware to block anything what needs the API if it doesnt exist
+function requireApiKey(req: express.Request, res: express.Response, next: express.NextFunction) {
+  if (!GOOGLE_API_KEY) {
+    return res.status(503).json({
+      error: "Funcionalidad no disponible: falta GOOGLE_API_KEY",
+      mockData: { example: true, routes: [{ from: "A", to: "B", distance: 12 }] }
+    });
+  }
+  next();
+}
+
+// Endpoints
 app.use('/api', graphRoutes);
 app.use('/api', rutaRoutes);
 app.use('/api', visualizadorRoutes);
+
+// app.use('/api/grafo', requireApiKey, graphRoutes);
+// app.use('/api/ruta', requireApiKey, rutaRoutes);
 
 app.get('/debug-files', (req, res) => {
   const basePath = path.join(__dirname);
@@ -57,7 +84,6 @@ app.get('/debug', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'debug.html'));
 });
 
-
 app.get('/docs', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'docs.html'));
 });
@@ -67,7 +93,6 @@ app.get('/logs', (req, res) => {
     res.json({ logs: ['Log 1', 'Log 2', 'Log 3'] });
   }, 2000);
 });
-
 
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);

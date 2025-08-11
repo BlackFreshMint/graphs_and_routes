@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bienvenido al Proyecto</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      margin: 0;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+    h1 {
+      color: #007acc;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      margin-top: 1rem;
+    }
+    ul {
+      text-align: left;
+      margin-top: 0.5rem;
+    }
+    a {
+      margin-top: 2rem;
+      color: #007acc;
+      text-decoration: none;
+      font-weight: bold;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.3s;
+    }
+    a:hover {
+      border-color: #007acc;
+    }
+
+    /* Modo oscuro */
+    body.dark {
+      background: #121212;
+      color: #ddd;
+    }
+    body.dark h1 {
+      color: #66aaff;
+    }
+    body.dark a {
+      color: #66aaff;
+    }
+    body.dark a:hover {
+      border-color: #66aaff;
+    }
+
+    /* Botón modo oscuro */
+    #darkModeToggle {
+      position: fixed;
+      right: 2rem;
+      background: transparent;
+      color: #007acc;
+      padding: 6px 12px;
+      border: 1px solid #007acc;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+      z-index: 1000;
+    }
+    #darkModeToggle:hover {
+      background: #007acc;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <button id="darkModeToggle">Modo Oscuro</button>
+
+  <h1>Graphs and Routes</h1>
+  <h2>Web Service con el cual se puede</h2>
+  <ul>
+      <li>Consultar Rutas</li>
+      <li>Crear grafos (limitado geográficamente a México)</li>
+      <li>Visualizar Rutas</li>
+      <li>Visualizar Grafos</li>
+  </ul>
+  <h2>Consultar:</h2>
+  <a href="/docs">📄 Documentación</a>
+
+  <script>
+    const toggleBtn = document.getElementById('darkModeToggle');
+    toggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      if(document.body.classList.contains('dark')){
+        toggleBtn.textContent = 'Modo Claro';
+      } else {
+        toggleBtn.textContent = 'Modo Oscuro';
+      }
+    });
+  </script>
+</body>
+</html>

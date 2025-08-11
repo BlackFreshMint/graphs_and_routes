@@ -2,118 +2,193 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Documentación API - Grafos y Rutas</title>
   <style>
-    :root {
-      --bg: #0f172a;
-      --panel: #0b1220;
-      --muted: #94a3b8;
-      --text: #e6eef8;
-      --accent: #3b82f6;
-      --accent-2: #4caf50;
-      --box-bg: #0b1220;
-      --pre-bg: #071225;
-      --success: #10b981;
-      --danger: #ef4444;
-    }
-
-    [data-theme="light"] {
-      --bg: #f9fafb;
-      --panel: #ffffff;
-      --muted: #6b7280;
-      --text: #0f172a;
-      --accent: #2563eb;
-      --accent-2: #16a34a;
-      --box-bg: #ffffff;
-      --pre-bg: #f3f4f6;
-      --success: #059669;
-      --danger: #dc2626;
-    }
-
-    html, body {
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
       margin: 0;
-      font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial;
-      background: var(--bg);
-      background: linear-gradient(180deg,var(--bg), #071027);
-      color: var(--text);
-      padding: 20px;
-      transition: background 0.3s, color 0.3s;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    [data-theme="light"] body {
-      background: var(--bg);
-      background: #f9fafb;
+    h1 {
+      color: #007acc;
+      margin-bottom: 1rem;
     }
 
-    h1, h2, h3 {
-      margin-top: 0;
-      color: var(--text);
+    h2 {
+      margin-top: 2rem;
+      margin-bottom: 0.8rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    h3 {
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      width: 100%;
+      max-width: 700px;
     }
 
     section {
-      background: var(--panel);
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 18px;
-      border: 1px solid rgba(255,255,255,0.04);
-      box-shadow: 0 6px 18px rgba(2,6,23,0.2);
-      transition: background 0.3s, border-color 0.3s;
+      max-width: 47.5%;
+      width: 100%;
+      background: white;
+      padding: 1.2rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+      margin-bottom: 1.5rem;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     pre {
-      background: var(--pre-bg);
-      color: var(--text);
+      background: #e3e8f0;
+      border-radius: 5px;
       padding: 1rem;
-      border-radius: 8px;
       overflow-x: auto;
-      position: relative;
-      border: 1px solid rgba(255,255,255,0.04);
-      font-family: monospace;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    code {
       font-family: Consolas, monospace;
+      font-size: 0.95rem;
+      position: relative;
+      margin-bottom: 1rem;
+      color: #1e293b;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     button.copy-btn {
       position: absolute;
-      top: 0.8rem;
-      right: 0.5rem;
-      background: linear-gradient(180deg,var(--accent), #145dbf);
-      color: white;
+      top: 0.5rem;
+      right: 0.6rem;
+      background: #007acc;
       border: none;
-      padding: 0.3rem 0.6rem;
+      color: white;
+      padding: 0.25rem 0.6rem;
       font-size: 0.8rem;
       border-radius: 5px;
       cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s ease;
+    }
+    button.copy-btn:hover {
+      background: #005fa3;
     }
 
     .output-box {
-      background: var(--box-bg);
-      border-left: 4px solid var(--accent);
+      background: #f9fafb;
+      border-left: 4px solid #007acc;
       padding: 1rem;
-      margin-top: 0.5rem;
       border-radius: 5px;
       white-space: pre-wrap;
-      transition: background 0.3s, border-color 0.3s;
+      color: #334155;
+      font-family: monospace;
+      font-size: 0.95rem;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
+    a {
+      color: #007acc;
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.3s;
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 1rem;
+    }
+    a:hover {
+      border-color: #007acc;
+    }
+
+    /* Modo oscuro */
+    body.dark-mode {
+      background: #121212;
+      color: #cbd5e1;
+    }
+
+    body.dark-mode h1 {
+      color: #66aaff;
+    }
+
+    body.dark-mode h2 {
+      color: white;
+    }
+
+    body.dark-mode h3 {
+      color: white;
+    }
+
+    body.dark-mode section {
+      background: #181818;
+    }
+
+    body.dark-mode pre {
+      background: #212121;
+      color: #cbd5e1;
+    }
+
+    body.dark-mode .output-box {
+      background: #101010;
+      border-left-color: #3b82f6;
+      color: #cbd5e1;
+    }
+
+    body.dark-mode button.copy-btn {
+      background: #3b82f6;
+    }
+
+    body.dark-mode button.copy-btn:hover {
+      background: #2563eb;
+    }
+
+    body.dark-mode a {
+      color: #3b82f6;
+      border-bottom-color: transparent;
+    }
+    body.dark-mode a:hover {
+      border-bottom-color: #3b82f6;
+    }
+
+    /* Botón toggle tema */
     #themeToggle {
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.06);
-      color: var(--text);
-      padding: 6px 10px;
-      border-radius:6px;
-      cursor:pointer;
-      margin-bottom: 16px;
-      transition: color 0.3s, border-color 0.3s;
+      border: 1px solid #007acc;
+      color: #007acc;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+      align-self: flex-end;
+      max-width: 700px;
+      max-width: 120px;
+      text-align: center;
+    }
+    body.dark-mode #themeToggle {
+      border-color: #3b82f6;
+      color: #3b82f6;
+    }
+    #themeToggle:hover {
+      background-color: #007acc;
+      color: white;
+      border-color: #007acc;
+    }
+    body.dark-mode #themeToggle:hover {
+      background-color: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
     }
   </style>
 </head>
-<body data-theme="dark">
-  <button id="themeToggle">Light Mode</button>
+<body>
+  <button id="themeToggle">Modo Oscuro</button>
   <h1>Documentación de API – Grafos y Rutas</h1>
 
   <section>
@@ -177,22 +252,21 @@
     const themeToggle = document.getElementById('themeToggle');
     const body = document.body;
 
-    function setTheme(theme) {
-      if (theme === 'light') {
-        body.setAttribute('data-theme','light');
-        themeToggle.textContent = 'Dark Mode';
+    function updateToggleText() {
+      if (body.classList.contains('dark-mode')) {
+        themeToggle.textContent = 'Modo Claro';
       } else {
-        body.setAttribute('data-theme','dark');
-        themeToggle.textContent = 'Light Mode';
+        themeToggle.textContent = 'Modo Oscuro';
       }
     }
 
-    setTheme('dark');
-
     themeToggle.addEventListener('click', () => {
-      const cur = body.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-      setTheme(cur === 'light' ? 'dark' : 'light');
+      body.classList.toggle('dark-mode');
+      updateToggleText();
     });
+
+    // Inicializar con modo claro
+    updateToggleText();
   </script>
 </body>
 </html>
