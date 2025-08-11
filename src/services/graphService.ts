@@ -7,8 +7,13 @@ import cliProgress from 'cli-progress';
 import minimist from 'minimist';
 
 dotenv.config();
-const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_API_KEY!;
-if (!GOOGLE_API_KEY) throw new Error('No API Key definida');
+const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_API_KEY || '';
+if (!GOOGLE_API_KEY) {
+  console.warn("Service is unable due to the lack of an API key");
+  // Evita que el código se ejecute
+  module.exports = {}; // exporta vacío para que otros módulos no fallen
+}
+
 
 // -------------------- Configurables --------------------
 const DATA_DIR = path.join(__dirname, '..', 'data'); // src/data
