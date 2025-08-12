@@ -15,8 +15,14 @@
     <h2>Peticiones Backend</h2>
 
     <h3>Generar grafo de un estado (singular)</h3>
-    <pre><code id="grafo-estado1">http://graphs-and-routes.onrender.com/api/grafo?estado=zacatecas</code><button class="copy-btn" onclick="copy('grafo-estado1')">Copiar</button></pre>
-    <pre><code id="grafo-estado2">http://localhost:3000/api/grafo?estado=zacatecas</code><button class="copy-btn" onclick="copy('grafo-estado2')">Copiar</button></pre>
+    <div class="code-container">
+      <pre><code id="grafo-estado1">http://graphs-and-routes.onrender.com/api/grafo?estado=zacatecas</code></pre>
+      <button class="copy-btn" onclick="copy('grafo-estado1')">Copiar</button>
+    </div>
+    <div class="code-container">
+      <pre><code id="grafo-estado2">http://localhost:3000/api/grafo?estado=zacatecas</code></pre>
+      <button class="copy-btn" onclick="copy('grafo-estado2')">Copiar</button>
+    </div>
     <div class="output-box">
       #meramente ilustrativo,
       {
@@ -26,17 +32,32 @@
     </div>
 
     <h3>Generar grafo de varios estados (múltiples)</h3>
-    <pre><code id="grafo-multiple1">http://graphs-and-routes.onrender.com/api/grafo?estado=durango&estado=sinaloa&estado=zacatecas</code><button class="copy-btn" onclick="copy('grafo-multiple1')">Copiar</button></pre>
-    <pre><code id="grafo-multiple2">http://localhost:3000/api/grafo?estado=durango&estado=sinaloa&estado=zacatecas</code><button class="copy-btn" onclick="copy('grafo-multiple2')">Copiar</button></pre>
+    <div class="code-container">
+      <pre><code id="grafo-multiple1">http://graphs-and-routes.onrender.com/api/grafo?estado=durango&estado=sinaloa&estado=zacatecas</code></pre>
+      <button class="copy-btn" onclick="copy('grafo-multiple1')">Copiar</button>
+    </div>
+    <div class="code-container">
+      <pre><code id="grafo-multiple2">http://localhost:3000/api/grafo?estado=durango&estado=sinaloa&estado=zacatecas</code></pre>
+      <button class="copy-btn" onclick="copy('grafo-multiple2')">Copiar</button>
+    </div>
     <div class="output-box">WIP</div>
 
     <h3>Generar grafo de todos los registros (nacional)</h3>
-    <pre><code id="grafo-todos1">http://graphs-and-routes.onrender.com/api/grafo</code><button class="copy-btn" onclick="copy('grafo-todos1')">Copiar</button></pre>
-    <pre><code id="grafo-todos2">http://localhost:3000/api/grafo</code><button class="copy-btn" onclick="copy('grafo-todos2')">Copiar</button></pre>
+    <div class="code-container">
+      <pre><code id="grafo-todos1">http://graphs-and-routes.onrender.com/api/grafo</code></pre>
+      <button class="copy-btn" onclick="copy('grafo-todos1')">Copiar</button>
+    </div>
+    <div class="code-container">
+      <pre><code id="grafo-todos2">http://localhost:3000/api/grafo</code></pre>
+      <button class="copy-btn" onclick="copy('grafo-todos2')">Copiar</button>
+    </div>
     <div class="output-box">WIP</div>
 
     <h3>Generar ruta entre dos nodos</h3>
-    <pre><code id="ruta-nodos">http:/graphs-and-routes.onrender.com/api/ruta?origen=62&destino=72</code><button class="copy-btn" onclick="copy('ruta-nodos')">Copiar</button></pre>
+    <div class="code-container">
+      <pre><code id="ruta-nodos">http://graphs-and-routes.onrender.com/api/ruta?origen=62&destino=72</code></pre>
+      <button class="copy-btn" onclick="copy('ruta-nodos')">Copiar</button>
+    </div>
     <div class="output-box">{
       "ruta": [ 62, 16, 17, 2, 80, 72 ],
       "distanciaTotal": 557.1850000000001
@@ -47,8 +68,14 @@
     <h2>Peticiones Frontend (Visualización)</h2>
 
     <h3>Visualizar ruta entre dos nodos en mapa</h3>
-    <pre><code id="vis-ruta1">http://graphs-and-routes.onrender.com/api/visualizadorRuta?archivo=62_72.json</code><button class="copy-btn" onclick="copy('vis-ruta1')">Copiar</button></pre>
-    <pre><code id="vis-ruta2">http://localhost:3000/api/visualizadorRuta?archivo=62_72.json</code><button class="copy-btn" onclick="copy('vis-ruta2')">Copiar</button></pre>
+    <div class="code-container">
+      <pre><code id="vis-ruta1">http://graphs-and-routes.onrender.com/api/visualizadorRuta?archivo=62_72.json</code></pre>
+      <button class="copy-btn" onclick="copy('vis-ruta1')">Copiar</button>
+    </div>
+    <div class="code-container">
+      <pre><code id="vis-ruta2">http://localhost:3000/api/visualizadorRuta?archivo=62_72.json</code></pre>
+      <button class="copy-btn" onclick="copy('vis-ruta2')">Copiar</button>
+    </div>
     <div class="output-box">
       <center>
         <img src="/img/ruta.png" alt="Ruta">
@@ -56,8 +83,14 @@
     </div>
 
     <h3>Visualizar grafo en mapa</h3>
-    <pre><code id="vis-grafo1">https://graphs-and-routes.onrender.com/api/visualizador</code><button class="copy-btn" onclick="copy('vis-grafo1')">Copiar</button></pre>
-    <pre><code id="vis-grafo2">http://localhost:3000/api/visualizador</code><button class="copy-btn" onclick="copy('vis-grafo2')">Copiar</button></pre>
+    <div class="code-container">
+      <pre><code id="vis-grafo1">https://graphs-and-routes.onrender.com/api/visualizador</code></pre>
+      <button class="copy-btn" onclick="copy('vis-grafo1')">Copiar</button>
+    </div>
+    <div class="code-container">
+      <pre><code id="vis-grafo2">http://localhost:3000/api/visualizador</code></pre>
+      <button class="copy-btn" onclick="copy('vis-grafo2')">Copiar</button>
+    </div>
     <div class="output-box">WIP</div>
   </section>
 </body>

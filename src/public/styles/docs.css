@@ -15,95 +15,95 @@ body {
 h1 {
     color: #007acc;
     margin-bottom: 1rem;
+    text-align: center;
 }
 
 h2 {
-    margin-bottom: 0.8rem;
+    margin-bottom: 1.5rem;
     width: 100%;
     text-align: center;
 }
 
 h3 {
     margin-top: 1.5rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
     width: 100%;
-    max-width: 700px;
+    color: #333;
 }
 
 section {
-    max-width: 47.5%;
     width: 100%;
+    max-width: 800px;
     background: white;
-    padding: 1.2rem 1.5rem;
+    padding: 1.5rem;
     border-radius: 8px;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
-    margin-bottom: 1.5rem;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.code-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
 }
 
 pre {
+    flex-grow: 1;
     background: #e3e8f0;
-    border-radius: 5px;
-    padding: 1rem;
-    overflow-x: auto;
-    font-family: Consolas, monospace;
+    border-radius: 6px;
+    padding: 12px 12px;
+    margin: 0;
+    font-family: 'Consolas', monospace;
     font-size: 0.95rem;
-    position: relative;
-    margin-bottom: 1rem;
     color: #1e293b;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: auto;
 }
 
-button.copy-btn {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.6rem;
+.copy-btn {
     background: #007acc;
-    border: none;
     color: white;
-    padding: 0.25rem 0.6rem;
-    font-size: 0.8rem;
-    border-radius: 5px;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 6px;
     cursor: pointer;
-    user-select: none;
+    font-weight: 600;
+    font-size: 0.9rem;
     transition: background-color 0.2s ease;
+    flex-shrink: 0;
 }
 
-button.copy-btn:hover {
+.copy-btn:hover {
     background: #005fa3;
 }
 
 .output-box {
     background: #f9fafb;
-    border-left: 4px solid #007acc;
+    border-radius: 6px;
     padding: 1rem;
-    border-radius: 5px;
+    margin-top: 8px;
+    font-family: monospace;
     white-space: pre-wrap;
     color: #334155;
-    font-family: monospace;
-    font-size: 0.95rem;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-a {
+#themeToggle {
+    background: transparent;
+    border: 1px solid #007acc;
     color: #007acc;
-    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 2rem;
     font-weight: 600;
-    border-bottom: 2px solid transparent;
-    transition: border-color 0.3s;
-    display: inline-block;
-    margin-top: 1rem;
-    font-size: 1rem;
+    transition: all 0.3s ease;
+    align-self: flex-end;
 }
 
-a:hover {
-    border-color: #007acc;
-}
-
-/* Modo oscuro */
+/* Dark Mode Styles */
 body.dark-mode {
     background: #121212;
-    color: #cbd5e1;
+    color: #e0e0e0;
 }
 
 body.dark-mode h1 {
@@ -124,48 +124,21 @@ body.dark-mode section {
 
 body.dark-mode pre {
     background: #212121;
-    color: #cbd5e1;
-    scrollbar-color: #6a6b6d #212121;
+    color: #e0e0e0;
+}
+
+body.dark-mode .copy-btn {
+    background: #3b82f6;
+}
+
+body.dark-mode .copy-btn:hover {
+    background: #2563eb;
 }
 
 body.dark-mode .output-box {
     background: #101010;
-    border-left-color: #3b82f6;
-    color: #cbd5e1;
-}
 
-body.dark-mode button.copy-btn {
-    background: #3b82f6;
-}
-
-body.dark-mode button.copy-btn:hover {
-    background: #2563eb;
-}
-
-body.dark-mode a {
-    color: #3b82f6;
-    border-bottom-color: transparent;
-}
-
-body.dark-mode a:hover {
-    border-bottom-color: #3b82f6;
-}
-
-/* Botón toggle tema */
-#themeToggle {
-    background: transparent;
-    border: 1px solid #007acc;
-    color: #007acc;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-bottom: 1.5rem;
-    font-weight: 600;
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
-    align-self: flex-end;
-    max-width: 700px;
-    max-width: 120px;
-    text-align: center;
+    color: #e0e0e0;
 }
 
 body.dark-mode #themeToggle {
@@ -173,14 +146,51 @@ body.dark-mode #themeToggle {
     color: #3b82f6;
 }
 
-#themeToggle:hover {
-    background-color: #007acc;
+body.dark-mode #themeToggle:hover {
+    background: #3b82f6;
     color: white;
-    border-color: #007acc;
 }
 
-body.dark-mode #themeToggle:hover {
-    background-color: #3b82f6;
-    color: white;
-    border-color: #3b82f6;
+/* Scrollbar Styles */
+pre::-webkit-scrollbar {
+    height: 6px;
+}
+
+pre::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+pre::-webkit-scrollbar-thumb {
+    background: #6a6b6d;
+    border-radius: 3px;
+}
+
+body.dark-mode pre::-webkit-scrollbar-track {
+    background: #6a6b6d;
+}
+
+body.dark-mode pre::-webkit-scrollbar-thumb {
+    background: #6a6b6d;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 1rem;
+    }
+
+    section {
+        padding: 1.2rem;
+    }
+
+    .code-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .copy-btn {
+        align-self: flex-end;
+        margin-top: 8px;
+    }
 }
