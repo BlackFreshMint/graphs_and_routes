@@ -12,58 +12,21 @@ dotenv.config();
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 export async function obtenerGrafo(req: Request, res: Response) {
-  const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
-
   if (!API_KEY) {
-    // Si no hay API key, se responde sin intentar nada
     res.send(`
       <html>
-        <head><title>Servicio no disponible</title></head>
+        <head><title>Servicio de Grafo</title></head>
         <body style="font-family: Arial, sans-serif; text-align: center; margin-top: 5rem;">
-          <h1>Servicio no disponible</h1>
-          <p>No se puede generar el grafo porque falta la API Key de Google Maps.</p>
+          <h1>Servicio activo pero sin API Key</h1>
+          <p>No se puede generar el grafo sin configurar <code>GOOGLE_MAPS_API_KEY</code>.</p>
         </body>
       </html>
     `);
     return;
   }
-
-  // Sólo aquí entra si hay API key
-  try {
-    const estadosRaw = req.query.estado;
-    let estados: string[] = [];
-
-    if (typeof estadosRaw === 'string') {
-      if (estadosRaw.toLowerCase() === 'all') {
-        estados = [];
-      } else {
-        estados = [estadosRaw];
-      }
-    } else if (Array.isArray(estadosRaw)) {
-      if (estadosRaw.some(e => String(e).toLowerCase() === 'all')) {
-        estados = [];
-      } else {
-        estados = estadosRaw.map(String);
-      }
-    }
-
-    const grafo = await generarGrafo(estados);
-    res.json(grafo);
-
-  } catch (error: any) {
-    console.error('Error generando el grafo:', error);
-
-    res.status(500).send(`
-      <html>
-        <head><title>Error</title></head>
-        <body style="font-family: Arial, sans-serif; text-align: center; margin-top: 5rem;">
-          <h1>No se ha podido acceder al servicio</h1>
-          <p>Razón: ${error.message || 'Error desconocido'}</p>
-        </body>
-      </html>
-    `);
-  }
 }
+
+
 
 // -------------------- Configurables --------------------
 const DATA_DIR = path.join(__dirname, '..', 'data'); // src/data
