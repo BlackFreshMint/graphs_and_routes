@@ -17,8 +17,8 @@ if (!GOOGLE_API_KEY) {
 
 // -------------------- Configurables --------------------
 const DATA_DIR = path.join(__dirname, '..', 'data'); // src/data
-const CACHE_GRAFO_DIR = path.join(DATA_DIR, 'cache_grafo');
-const CACHE_RUTAS_DIR = path.join(DATA_DIR, 'cache_rutas');
+const CACHE_GRAFO_DIR = path.join(DATA_DIR, 'cache', 'grafo');
+const CACHE_RUTAS_DIR = path.join(DATA_DIR, 'cache', 'rutas');
 const GRAFO_OUTPUT_PATH = path.join(DATA_DIR, 'grafo.json');
 
 // Delay between route requests (ms) to avoid rate limit spikes
