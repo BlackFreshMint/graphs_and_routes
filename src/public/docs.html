@@ -131,6 +131,7 @@
     body.dark-mode pre {
       background: #212121;
       color: #cbd5e1;
+      scrollbar-color: #6a6b6d #212121;
     }
 
     body.dark-mode .output-box {
@@ -251,22 +252,61 @@
 
     const themeToggle = document.getElementById('themeToggle');
     const body = document.body;
+    let userOverride = false;
 
     function updateToggleText() {
-      if (body.classList.contains('dark-mode')) {
-        themeToggle.textContent = 'Modo Claro';
-      } else {
-        themeToggle.textContent = 'Modo Oscuro';
-      }
+      themeToggle.textContent = body.classList.contains('dark-mode') ? 'Modo Claro' : 'Modo Oscuro';
     }
 
+    // Init theme on page load
+    (function initTheme() {
+      try {
+        const saved = localStorage.getItem('debug_theme');
+        if (saved === 'dark-mode') {
+          body.classList.add('dark-mode');
+        } else if (saved === 'light') {
+          body.classList.remove('dark-mode');
+        } else {
+          // No saved preference, apply system preference
+          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            body.classList.add('dark-mode');
+          } else {
+            body.classList.remove('dark-mode');
+          }
+        }
+      } catch {
+        // ignore localStorage errors
+      }
+      updateToggleText();
+    })();
+
+    // Toggle button click handler
     themeToggle.addEventListener('click', () => {
-      body.classList.toggle('dark-mode');
+      userOverride = true;
+      if (body.classList.contains('dark-mode')) {
+        body.classList.remove('dark-mode');
+        localStorage.setItem('debug_theme', 'light');
+      } else {
+        body.classList.add('dark-mode');
+        localStorage.setItem('debug_theme', 'dark-mode');
+      }
       updateToggleText();
     });
 
-    // Inicializar con modo claro
-    updateToggleText();
+    // Listen to system theme changes
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!userOverride) {
+          if (e.matches) {
+            body.classList.add('dark-mode');
+          } else {
+            body.classList.remove('dark-mode');
+          }
+          updateToggleText();
+        }
+      });
+    }
+
   </script>
 </body>
 </html>

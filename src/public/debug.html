@@ -40,9 +40,6 @@
     max-width: 700px;
   }
 
-  .element{
-    scrollbar-color: #6a6b6d #212121;
-  }
 
   section {
     max-width: 60%;
@@ -431,6 +428,7 @@
 </style>
 
 </head>
+
 <body class="dark-mode">
   <!-- Floating theme button -->
   <button id="darkModeToggle" aria-pressed="true">Modo Claro</button>
@@ -453,7 +451,8 @@
         <div id="progressArchivos" class="progress-bar"></div>
       </div>
       <div id="statusArchivos" class="status small">Esperando...</div>
-      <pre id="fileTree" class="file-tree" style="color: #757575;">Pulsa "Cargar estructura" para ver los archivos...</pre>
+      <pre id="fileTree" class="file-tree"
+        style="color: #757575;">Pulsa "Cargar estructura" para ver los archivos...</pre>
     </section>
 
     <!-- GRAFO -->
@@ -471,7 +470,8 @@
         <div id="progressGrafo" class="progress-bar"></div>
       </div>
       <div id="statusGrafo" class="status small">Esperando...</div>
-      <textarea id="grafoOutput" class="output" readonly="" placeholder="La respuesta JSON del grafo aparecerá aquí..."></textarea>
+      <textarea id="grafoOutput" class="output" readonly=""
+        placeholder="La respuesta JSON del grafo aparecerá aquí..."></textarea>
     </section>
 
     <!-- RUTA -->
@@ -489,7 +489,8 @@
         <div id="progressRuta" class="progress-bar"></div>
       </div>
       <div id="statusRuta" class="status small">Esperando...</div>
-      <textarea id="rutaOutput" class="output" readonly="" placeholder="La respuesta JSON de la ruta aparecerá aquí..."></textarea>
+      <textarea id="rutaOutput" class="output" readonly=""
+        placeholder="La respuesta JSON de la ruta aparecerá aquí..."></textarea>
     </section>
 
   </div>
@@ -498,7 +499,7 @@
   <div id="map"></div>
 
   <script>
-    const headerThemeBtn = document.getElementById('themeToggle');
+    // Solo botón flotante para toggle tema (headerThemeBtn no existe, lo quitamos)
     const floatingThemeBtn = document.getElementById('darkModeToggle');
     const bodyEl = document.body;
 
@@ -509,7 +510,7 @@
         bodyEl.classList.remove('dark-mode');
       }
       updateToggleText();
-      try { localStorage.setItem('debug_theme', theme); } catch(e){}
+      try { localStorage.setItem('debug_theme', theme); } catch (e) { }
     }
 
     function toggleTheme() {
@@ -520,29 +521,26 @@
     function updateToggleText() {
       const isDark = bodyEl.classList.contains('dark-mode');
       const txt = isDark ? 'Modo Claro' : 'Modo Oscuro';
-      if (headerThemeBtn) headerThemeBtn.textContent = txt;
       if (floatingThemeBtn) floatingThemeBtn.textContent = txt;
       if (floatingThemeBtn) floatingThemeBtn.setAttribute('aria-pressed', isDark ? 'true' : 'false');
     }
 
-    (function initTheme(){
-      const saved = localStorage.getItem('debug_theme') || 'dark-mode';
-      applyTheme(saved);
-      if (headerThemeBtn) headerThemeBtn.addEventListener('click', toggleTheme);
-      if (floatingThemeBtn) floatingThemeBtn.addEventListener('click', toggleTheme);
-    })();
+    function initTheme() {
+      let saved = null;
+      try {
+        saved = localStorage.getItem('debug_theme');
+      } catch(e) {}
 
-    function simulateProgress(barId) {
-      const bar = document.getElementById(barId);
-      if (!bar) return null;
-      bar.style.width = '0%';
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress = Math.min(90, progress + Math.random()*12);
-        bar.style.width = progress + '%';
-      }, 180);
-      return interval;
-    }
+      if (!saved) {
+        // No hay guardado: detectamos el sistema
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        saved = prefersDark ? 'dark-mode' : 'light';
+      }
+      applyTheme(saved);
+
+      if (floatingThemeBtn) floatingThemeBtn.addEventListener('click', toggleTheme);
+    };
+
 
     async function cargarArchivos() {
       const btn = document.getElementById('btnCargarArchivos');
@@ -562,13 +560,13 @@
         document.getElementById('fileTree').textContent = 'Error: ' + (err.message || err);
       } finally {
         if (progressInterval) clearInterval(progressInterval);
-        setTimeout(()=> { document.getElementById('progressArchivos').style.width = '0%'; btn.disabled = false; }, 700);
+        setTimeout(() => { document.getElementById('progressArchivos').style.width = '0%'; btn.disabled = false; }, 700);
       }
     }
     document.getElementById('btnCargarArchivos').addEventListener('click', cargarArchivos);
 
-    // copy tree
-    document.getElementById('btnCopyFiles').addEventListener('click', async ()=>{
+    // copiar árbol de archivos
+    document.getElementById('btnCopyFiles').addEventListener('click', async () => {
       const txt = document.getElementById('fileTree').textContent || '';
       try {
         await navigator.clipboard.writeText(txt);
@@ -578,8 +576,8 @@
       }
     });
 
-    // download files tree
-    document.getElementById('btnDownloadFiles').addEventListener('click', ()=>{
+    // descargar archivo de árbol
+    document.getElementById('btnDownloadFiles').addEventListener('click', () => {
       const txt = document.getElementById('fileTree').textContent || '';
       const blob = new Blob([txt], { type: 'text/plain' });
       const a = document.createElement('a');
@@ -602,12 +600,10 @@
         const res = await fetch(url);
         if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
         const text = await res.text();
-        // try parse JSON
         try {
           const data = JSON.parse(text);
           output.value = JSON.stringify(data, null, 2);
         } catch (e) {
-          // not JSON
           output.value = text;
         }
         document.getElementById(progressId).style.width = '100%';
@@ -617,7 +613,7 @@
         output.value = 'Error: ' + (err.message || err);
       } finally {
         if (progressInterval) clearInterval(progressInterval);
-        setTimeout(()=> document.getElementById(progressId).style.width = '0%', 600);
+        setTimeout(() => document.getElementById(progressId).style.width = '0%', 600);
       }
     }
 
@@ -640,23 +636,23 @@
       }
     }
 
-    function sanitizeFilename(s){
-      return (s || 'download').replace(/[^a-z0-9\-_\.]/gi,'_').slice(0,200);
+    function sanitizeFilename(s) {
+      return (s || 'download').replace(/[^a-z0-9\-_\.]/gi, '_').slice(0, 200);
     }
 
-    // wire grafo & ruta buttons
-    document.getElementById('btnCargarGrafo').addEventListener('click', ()=> cargarJSON('grafoUrl','grafoOutput','progressGrafo','statusGrafo'));
-    document.getElementById('btnDescargarGrafo').addEventListener('click', ()=> descargarJSON('grafoUrl'));
+    // botones grafo & ruta
+    document.getElementById('btnCargarGrafo').addEventListener('click', () => cargarJSON('grafoUrl', 'grafoOutput', 'progressGrafo', 'statusGrafo'));
+    document.getElementById('btnDescargarGrafo').addEventListener('click', () => descargarJSON('grafoUrl'));
 
-    document.getElementById('btnCargarRuta').addEventListener('click', ()=> cargarJSON('rutaUrl','rutaOutput','progressRuta','statusRuta'));
-    document.getElementById('btnDescargarRuta').addEventListener('click', ()=> descargarJSON('rutaUrl'));
+    document.getElementById('btnCargarRuta').addEventListener('click', () => cargarJSON('rutaUrl', 'rutaOutput', 'progressRuta', 'statusRuta'));
+    document.getElementById('btnDescargarRuta').addEventListener('click', () => descargarJSON('rutaUrl'));
 
-    // quick shortcuts: Enter on input triggers load
-    document.getElementById('grafoUrl').addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter'){ cargarJSON('grafoUrl','grafoOutput','progressGrafo','statusGrafo'); }
+    // accesos rápidos (Enter en inputs)
+    document.getElementById('grafoUrl').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { cargarJSON('grafoUrl', 'grafoOutput', 'progressGrafo', 'statusGrafo'); }
     });
-    document.getElementById('rutaUrl').addEventListener('keydown', (e)=>{
-      if(e.key === 'Enter'){ cargarJSON('rutaUrl','rutaOutput','progressRuta','statusRuta'); }
+    document.getElementById('rutaUrl').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { cargarJSON('rutaUrl', 'rutaOutput', 'progressRuta', 'statusRuta'); }
     });
 
     let map;
@@ -734,13 +730,11 @@
     function mostrarRutaPolyline(arista) {
       if (!arista) return;
       if (!arista.polyline) {
-        // si no hay polyline codificada, trazar una línea simple entre origen/destino (fallback)
+        // fallback simple sin polyline codificada
         if (!arista.origen || !arista.destino) return;
-        const path = [];
-        // intentar leer nodos desde archivo cargado en markers (no ideal, fallback visual)
         rutasVisibles.push(new google.maps.Polyline({
           path: [
-            // fallback no conoce lat/lng si no estaban
+            // Aquí podrías agregar lat/lng si los tienes
           ],
           geodesic: true,
           strokeColor: "#FF0000",
@@ -799,4 +793,6 @@
 
 
 
-</body></html>
+</body>
+
+</html>
