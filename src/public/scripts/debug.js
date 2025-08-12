@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!floatingThemeBtn) {
     console.error('Dark mode toggle button not found (id="darkModeToggle").');
-    // Optionally, you could return here if this button is critical
   } else {
     function applyTheme(isDark) {
       if (isDark) {
@@ -42,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
       applyTheme(!isDark);
     });
 
-    // React to system theme changes if no manual preference saved
     if (window.matchMedia) {
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
       if (mq.addEventListener) {
@@ -64,12 +62,28 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Initialize theme on page load
     initTheme();
   }
 
-  // --- Rest of your original script continues here ---
+  // simulateProgress helper function
+  function simulateProgress(progressBarId) {
+    const progressBar = document.getElementById(progressBarId);
+    if (!progressBar) return null;
 
+    let width = 0;
+    const interval = setInterval(() => {
+      if (width >= 90) {
+        clearInterval(interval);
+        return;
+      }
+      width += 1;
+      progressBar.style.width = width + '%';
+    }, 50);
+
+    return interval;
+  }
+
+  // cargarArchivos fetch + progress
   async function cargarArchivos() {
     const btn = document.getElementById('btnCargarArchivos');
     btn.disabled = true;
@@ -88,12 +102,15 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('fileTree').textContent = 'Error: ' + (err.message || err);
     } finally {
       if (progressInterval) clearInterval(progressInterval);
-      setTimeout(() => { document.getElementById('progressArchivos').style.width = '0%'; btn.disabled = false; }, 700);
+      setTimeout(() => {
+        document.getElementById('progressArchivos').style.width = '0%';
+        btn.disabled = false;
+      }, 700);
     }
   }
   document.getElementById('btnCargarArchivos').addEventListener('click', cargarArchivos);
 
-  // copiar árbol de archivos
+  // Copy file tree text to clipboard
   document.getElementById('btnCopyFiles').addEventListener('click', async () => {
     const txt = document.getElementById('fileTree').textContent || '';
     try {
@@ -104,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // descargar archivo de árbol
+  // Download file tree text as file
   document.getElementById('btnDownloadFiles').addEventListener('click', () => {
     const txt = document.getElementById('fileTree').textContent || '';
     const blob = new Blob([txt], { type: 'text/plain' });
@@ -183,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') { cargarJSON('rutaUrl', 'rutaOutput', 'progressRuta', 'statusRuta'); }
   });
 
+  // Map variables
   let map;
   let markers = [];
   let baseLines = [];
