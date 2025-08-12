@@ -5,16 +5,65 @@ import { fetch } from 'undici';
 import * as dotenv from 'dotenv';
 import cliProgress from 'cli-progress';
 import minimist from 'minimist';
+import { Request, Response } from 'express';
 
 dotenv.config();
 
-const GOOGLE_API_KEY = process.env.GOOGLE_MAPS_API_KEY || '';
-if (!GOOGLE_API_KEY) {
-  console.warn("Service is unable due to the lack of an API key");
+const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+
+export async function obtenerGrafo(req: Request, res: Response) {
+  const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+
+  if (!API_KEY) {
+    // Si no hay API key, se responde sin intentar nada
+    res.send(`
+      <html>
+        <head><title>Servicio no disponible</title></head>
+        <body style="font-family: Arial, sans-serif; text-align: center; margin-top: 5rem;">
+          <h1>Servicio no disponible</h1>
+          <p>No se puede generar el grafo porque falta la API Key de Google Maps.</p>
+        </body>
+      </html>
+    `);
+    return;
+  }
+
+  // Sólo aquí entra si hay API key
+  try {
+    const estadosRaw = req.query.estado;
+    let estados: string[] = [];
+
+    if (typeof estadosRaw === 'string') {
+      if (estadosRaw.toLowerCase() === 'all') {
+        estados = [];
+      } else {
+        estados = [estadosRaw];
+      }
+    } else if (Array.isArray(estadosRaw)) {
+      if (estadosRaw.some(e => String(e).toLowerCase() === 'all')) {
+        estados = [];
+      } else {
+        estados = estadosRaw.map(String);
+      }
+    }
+
+    const grafo = await generarGrafo(estados);
+    res.json(grafo);
+
+  } catch (error: any) {
+    console.error('Error generando el grafo:', error);
+
+    res.status(500).send(`
+      <html>
+        <head><title>Error</title></head>
+        <body style="font-family: Arial, sans-serif; text-align: center; margin-top: 5rem;">
+          <h1>No se ha podido acceder al servicio</h1>
+          <p>Razón: ${error.message || 'Error desconocido'}</p>
+        </body>
+      </html>
+    `);
+  }
 }
-
-
-
 
 // -------------------- Configurables --------------------
 const DATA_DIR = path.join(__dirname, '..', 'data'); // src/data
@@ -192,7 +241,7 @@ async function obtenerDistanciaRuta(origen: Nodo, destino: Nodo): Promise<{ dist
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Goog-Api-Key': GOOGLE_API_KEY,
+        'X-Goog-Api-Key': API_KEY,
         'X-Goog-FieldMask': 'routes.distanceMeters,routes.polyline.encodedPolyline',
       },
       body: JSON.stringify(body),
