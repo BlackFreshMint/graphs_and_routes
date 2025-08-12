@@ -125,6 +125,7 @@ body.dark-mode section {
 body.dark-mode pre {
     background: #212121;
     color: #e0e0e0;
+     scrollbar-color: #6a6b6d #212121;
 }
 
 body.dark-mode .copy-btn {
@@ -151,28 +152,6 @@ body.dark-mode #themeToggle:hover {
     color: white;
 }
 
-/* Scrollbar Styles */
-pre::-webkit-scrollbar {
-    height: 6px;
-}
-
-pre::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-pre::-webkit-scrollbar-thumb {
-    background: #6a6b6d;
-    border-radius: 3px;
-}
-
-body.dark-mode pre::-webkit-scrollbar-track {
-    background: #6a6b6d;
-}
-
-body.dark-mode pre::-webkit-scrollbar-thumb {
-    background: #6a6b6d;
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {
